@@ -15,7 +15,7 @@ import com.orensharon.brainq.data.RequestRepository;
 
 import javax.inject.Inject;
 
-public class HttpService extends IntentService implements HTTPMethods, RequestStateListener {
+public class HttpService extends IntentService implements HTTPMethods {
 
 
     private final static String TAG = HttpService.class.getSimpleName();
@@ -24,9 +24,6 @@ public class HttpService extends IntentService implements HTTPMethods, RequestSt
 
     @Inject
     RequestRepository requestRepository;
-
-    @Inject
-    QueueWorker queueWorker;
 
     public HttpService() {
         this("HttpService");
@@ -41,15 +38,12 @@ public class HttpService extends IntentService implements HTTPMethods, RequestSt
         Log.i(TAG, "onCreate");
         super.onCreate();
         ((App)this.getApplicationContext()).applicationComponent.inject(this);
-        this.queueWorker.start();
-        this.queueWorker.setListener(this);
     }
 
     @Override
     public void onDestroy() {
         Log.i(TAG, "onDestroy");
         super.onDestroy();
-        this.queueWorker.setListener(null);
     }
 
     @Override
@@ -68,7 +62,6 @@ public class HttpService extends IntentService implements HTTPMethods, RequestSt
             default:
                 break;
         }
-
     }
 
     @Override
@@ -81,11 +74,6 @@ public class HttpService extends IntentService implements HTTPMethods, RequestSt
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
-    }
-
-    @Override
-    public void onRequestStateChange(Request request) {
-        Log.i(TAG, "onRequestStateChange");
     }
 
     public class LocalBinder extends Binder {

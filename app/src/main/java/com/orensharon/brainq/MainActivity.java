@@ -2,27 +2,35 @@ package com.orensharon.brainq;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Button;
 
+import com.orensharon.brainq.data.Request;
 import com.orensharon.brainq.mock.Mock;
 import com.orensharon.brainq.mock.Util;
 import com.orensharon.brainq.service.HTTPMethods;
+import com.orensharon.brainq.service.HttpRequestQueue;
 import com.orensharon.brainq.service.HttpService;
+import com.orensharon.brainq.service.RequestStateListener;
 
-public class MainActivity extends AppCompatActivity {
+import javax.inject.Inject;
+
+public class MainActivity extends AppCompatActivity implements RequestStateListener {
+
+    private final static String TAG = MainActivity.class.getSimpleName();
 
     private HttpService service;
     private boolean bounded = false;
 
-    public static final String REQUEST_STATE = "REQUEST_STATE";
-
     private Button sendValidButton;
     private Button sendInvalidButton;
+
+    @Inject
+    HttpRequestQueue httpRequestQueue;
 
     private final ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -35,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             bounded = false;
+            unbindService(connection);
         }
     };
 
@@ -42,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ((App)this.getApplicationContext()).applicationComponent.inject(this);
 
         this.sendValidButton = this.findViewById(R.id.sendValidButton);
         this.sendInvalidButton = this.findViewById(R.id.sendInvalidButton);
@@ -61,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             i.putExtra("jsonPayload", Util.generatePayload());
             this.startService(i);
         });
-
+        this.httpRequestQueue.setListener(this);
         Mock.startSendMock(this.getApplicationContext());
     }
 
@@ -69,12 +79,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         Intent i = new Intent(this, HttpService.class);
-        this.bindService(i, connection, Context.BIND_AUTO_CREATE);
+//        this.bindService(i, connection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        this.unbindService(this.connection);
+//        this.unbindService(this.connection);
+        this.httpRequestQueue.setListener(null);
+    }
+
+    @Override
+    public void onRequestStateChange(Request request) {
+        Log.i(TAG, "onRequestStateChange");
     }
 }
