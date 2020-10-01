@@ -12,11 +12,11 @@ import android.widget.Button;
 import com.orensharon.brainq.mock.Mock;
 import com.orensharon.brainq.mock.Util;
 import com.orensharon.brainq.service.HTTPMethods;
-import com.orensharon.brainq.service.HttpQueueService;
+import com.orensharon.brainq.service.HttpService;
 
 public class MainActivity extends AppCompatActivity {
 
-    private HttpQueueService service;
+    private HttpService service;
     private boolean bounded = false;
 
     public static final String REQUEST_STATE = "REQUEST_STATE";
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            HttpQueueService.LocalBinder binder = (HttpQueueService.LocalBinder) service;
+            HttpService.LocalBinder binder = (HttpService.LocalBinder) service;
             MainActivity.this.service = binder.getService();
             bounded = true;
         }
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         this.sendInvalidButton = this.findViewById(R.id.sendInvalidButton);
 
         this.sendValidButton.setOnClickListener(v -> {
-            Intent i = new Intent(this, HttpQueueService.class);
+            Intent i = new Intent(this, HttpService.class);
             i.putExtra("method", HTTPMethods.Method.PUT);
             i.putExtra("endPoint", "https://jsonplaceholder.typicode.com/posts/1");
             i.putExtra("jsonPayload", Util.generatePayload());
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         this.sendInvalidButton.setOnClickListener(v -> {
-            Intent i = new Intent(this, HttpQueueService.class);
+            Intent i = new Intent(this, HttpService.class);
             i.putExtra("method", HTTPMethods.Method.PUT);
             i.putExtra("endPoint", "https://jsonplaceholder.typicode.com/posts/122");
             i.putExtra("jsonPayload", Util.generatePayload());
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Intent i = new Intent(this, HttpQueueService.class);
+        Intent i = new Intent(this, HttpService.class);
         this.bindService(i, connection, Context.BIND_AUTO_CREATE);
     }
 

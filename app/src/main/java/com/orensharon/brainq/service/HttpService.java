@@ -10,15 +10,15 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.orensharon.brainq.App;
-import com.orensharon.brainq.Request;
+import com.orensharon.brainq.data.Request;
 import com.orensharon.brainq.data.RequestRepository;
 
 import javax.inject.Inject;
 
-public class HttpQueueService extends IntentService implements HTTPMethods {
+public class HttpService extends IntentService implements HTTPMethods, RequestStateListener {
 
 
-    private final static String TAG = HttpQueueService.class.getSimpleName();
+    private final static String TAG = HttpService.class.getSimpleName();
 
     private final IBinder binder = new LocalBinder();
 
@@ -26,21 +26,30 @@ public class HttpQueueService extends IntentService implements HTTPMethods {
     RequestRepository requestRepository;
 
     @Inject
-    QueueManager queueManager;
+    QueueWorker queueWorker;
 
-    public HttpQueueService() {
-        this("HttpQueueService");
+    public HttpService() {
+        this("HttpService");
     }
 
-    public HttpQueueService(String name) {
+    public HttpService(String name) {
         super(name);
     }
 
     @Override
     public void onCreate() {
+        Log.i(TAG, "onCreate");
         super.onCreate();
         ((App)this.getApplicationContext()).applicationComponent.inject(this);
-        this.queueManager.start();
+        this.queueWorker.start();
+        this.queueWorker.setListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "onDestroy");
+        super.onDestroy();
+        this.queueWorker.setListener(null);
     }
 
     @Override
@@ -74,11 +83,14 @@ public class HttpQueueService extends IntentService implements HTTPMethods {
         return binder;
     }
 
-
+    @Override
+    public void onRequestStateChange(Request request) {
+        Log.i(TAG, "onRequestStateChange");
+    }
 
     public class LocalBinder extends Binder {
-        public HttpQueueService getService() {
-            return HttpQueueService.this;
+        public HttpService getService() {
+            return HttpService.this;
         }
     }
 }

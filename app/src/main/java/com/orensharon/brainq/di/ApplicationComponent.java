@@ -1,7 +1,7 @@
 package com.orensharon.brainq.di;
 
 import com.orensharon.brainq.App;
-import com.orensharon.brainq.service.HttpQueueService;
+import com.orensharon.brainq.service.HttpService;
 
 import javax.inject.Singleton;
 
@@ -21,5 +21,5 @@ public interface ApplicationComponent {
         ApplicationComponent build();
     }
     void inject(App app);
-    void inject(HttpQueueService service);
+    void inject(HttpService service);
 }

@@ -21,7 +21,7 @@
         </activity>
         <service
             android:enabled="true"
-            android:name=".service.HttpQueueService" />
+            android:name=".service.HttpService" />
         <receiver
             android:name=".mock.Receiver">
         </receiver>

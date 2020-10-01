@@ -1,34 +1,34 @@
 package com.orensharon.brainq.service;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.orensharon.brainq.Request;
+import com.orensharon.brainq.data.Request;
 import com.orensharon.brainq.data.RequestRepository;
 import com.orensharon.brainq.util.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class QueueManager {
+public class QueueWorker {
 
-    private final static String TAG = QueueManager.class.getSimpleName();
+    private final static String TAG = QueueWorker.class.getSimpleName();
 
 
     private volatile boolean started;
 
     private final ExecutorService executor;
-
     private final RequestRepository repository;
-
     private final RequestQueue requestQueue;
 
-    public QueueManager(RequestQueue requestQueue, RequestRepository repository) {
+    private RequestStateListener listener;
+
+    public QueueWorker(RequestQueue requestQueue, RequestRepository repository) {
         this.repository = repository;
         this.requestQueue = requestQueue;
         this.executor = Executors.newSingleThreadExecutor();
@@ -44,8 +44,8 @@ public class QueueManager {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Request request = this.repository.take();
-                    long ts = System.currentTimeMillis();
-                    Log.i(TAG, "Checking request: " + request.toString() + " - " + Util.getSimpleDateFormat().format(request.getLastRetryMs()));
+                    long ts = SystemClock.elapsedRealtime();
+                    Log.i(TAG, "Checking request: " + request.toString());
                     if (request.isReady(ts)) {
                         this.sendRequest(request);
                     } else {
@@ -75,31 +75,38 @@ public class QueueManager {
         if (request == null) {
             return;
         }
-        long ts = System.currentTimeMillis();
+        if (this.listener == null) {
+            return;
+        }
+        long ts = SystemClock.elapsedRealtime();
         if (!request.isReady(ts)) {
             return;
         }
         Log.i(TAG, "Sending request: " + request.toString());
-        int method = request.getMethod();
-        String endPoint = request.getEndpoint();
+        // TODO: volley response on main thread!
         try {
             JsonObjectRequest req = new JsonObjectRequest(
-                    method,
-                    endPoint,
+                    request.getMethod(),
+                    request.getEndpoint(),
                     new JSONObject(request.getPayload()),
                     response -> {
                         request.success();
                         Log.i(TAG, "Request success: " + request.toString());
+                        this.listener.onRequestStateChange(request);
                     },
                     error -> {
                         request.failed(ts);
                         Log.i(TAG, "Request failed: " + request.toString());
                         this.repository.add(request);
+                        this.listener.onRequestStateChange(request);
                     });
             this.requestQueue.add(req);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
 
+    public void setListener(RequestStateListener listener) {
+        this.listener = listener;
     }
 }

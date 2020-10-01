@@ -1,4 +1,4 @@
-package com.orensharon.brainq;
+package com.orensharon.brainq.data;
 
 import com.orensharon.brainq.service.HTTPMethods;
 
@@ -17,6 +17,14 @@ public class Request implements Serializable {
         this.method = method;
         this.retries = 0;
         this.lastRetryMs = 0;
+    }
+
+    public Request(Request request) {
+        this.endpoint = request.endpoint;
+        this.jsonPayload = request.jsonPayload;
+        this.method = request.method;
+        this.retries = request.retries;
+        this.lastRetryMs = request.lastRetryMs;
     }
 
     public static Request put(String endpoint, String jsonPayload) {

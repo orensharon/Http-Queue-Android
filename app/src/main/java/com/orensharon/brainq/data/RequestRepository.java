@@ -1,8 +1,6 @@
 package com.orensharon.brainq.data;
 
-import com.orensharon.brainq.Request;
-import com.orensharon.brainq.service.RetryComparator;
-
+import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 
 public class RequestRepository {
@@ -13,14 +11,17 @@ public class RequestRepository {
     }
 
     public void add(Request request) {
-        this.queue.add(request);
+        this.queue.add(new Request(request));
     }
 
     public Request take() throws InterruptedException {
         return this.queue.take();
     }
 
-    public void delete(Request request) {
-        this.queue.remove(request);
+    public static class RetryComparator implements Comparator<Request> {
+        @Override
+        public int compare(Request x, Request y) {
+            return Integer.compare(x.getRetries(), y.getRetries());
+        }
     }
 }
