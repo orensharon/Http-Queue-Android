@@ -21,7 +21,7 @@ public class HttpRequestQueue {
 
     private volatile boolean started;
 
-    private final ExecutorService executor;
+    private ExecutorService executor;
     private final RequestRepository repository;
     private final RequestQueue requestQueue;
 
@@ -30,7 +30,6 @@ public class HttpRequestQueue {
     public HttpRequestQueue(RequestQueue requestQueue, RequestRepository repository) {
         this.repository = repository;
         this.requestQueue = requestQueue;
-        this.executor = Executors.newSingleThreadExecutor();
     }
 
     public void listen() {
@@ -39,6 +38,7 @@ public class HttpRequestQueue {
         }
         Log.i(TAG, "starting");
         this.started = true;
+        this.executor = Executors.newSingleThreadExecutor();
         this.executor.execute(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
@@ -50,6 +50,7 @@ public class HttpRequestQueue {
                 }
             }
             Log.i(TAG, "No longer listing");
+            this.terminate();
         });
     }
 
@@ -60,6 +61,7 @@ public class HttpRequestQueue {
         this.executor.shutdownNow();
         this.started = false;
         this.listener = null;
+        this.executor = null;
         Log.i(TAG, "terminated");
     }
 
@@ -70,7 +72,6 @@ public class HttpRequestQueue {
     private void mainJob() throws InterruptedException {
         Request request = this.repository.take();
         long ts = SystemClock.elapsedRealtime();
-        Log.i(TAG, "Checking request: " + request.toString());
         if (request.isReady(ts)) {
             this.sendRequest(request);
             return;

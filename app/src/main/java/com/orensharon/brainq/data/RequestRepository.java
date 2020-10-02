@@ -7,7 +7,7 @@ public class RequestRepository {
     private final PriorityBlockingQueue<Request> queue;
 
     public RequestRepository() {
-        this.queue = new PriorityBlockingQueue<>(100, new RetryComparator());
+        this.queue = new PriorityBlockingQueue<>(11, new RetryComparator());
     }
 
     public void add(Request request) {

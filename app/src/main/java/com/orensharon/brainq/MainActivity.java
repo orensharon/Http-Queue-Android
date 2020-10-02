@@ -72,7 +72,8 @@ public class MainActivity extends AppCompatActivity implements RequestStateListe
             this.startService(i);
         });
         this.httpRequestQueue.setListener(this);
-        Mock.startSendMock(this.getApplicationContext());
+        this.httpRequestQueue.listen();
+        //Mock.startSendMock(this.getApplicationContext());
     }
 
     @Override
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements RequestStateListe
         super.onDestroy();
 //        this.unbindService(this.connection);
         this.httpRequestQueue.setListener(null);
+        this.httpRequestQueue.terminate();
     }
 
     @Override
