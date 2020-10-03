@@ -1,7 +1,7 @@
 package com.orensharon.brainq.di;
 
 import com.orensharon.brainq.App;
-import com.orensharon.brainq.MainActivity;
+import com.orensharon.brainq.presentation.view.VisualizationActivity;
 import com.orensharon.brainq.service.HttpQueueIntentService;
 
 import javax.inject.Singleton;
@@ -22,6 +22,6 @@ public interface ApplicationComponent {
         ApplicationComponent build();
     }
     void inject(App app);
-    void inject(MainActivity mainActivity);
+    void inject(VisualizationActivity visualizationActivity);
     void inject(HttpQueueIntentService service);
 }

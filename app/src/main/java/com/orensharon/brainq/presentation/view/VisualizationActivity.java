@@ -1,6 +1,9 @@
-package com.orensharon.brainq;
+package com.orensharon.brainq.presentation.view;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,8 +13,12 @@ import android.widget.Button;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.orensharon.brainq.App;
+import com.orensharon.brainq.R;
 import com.orensharon.brainq.data.event.RequestStateChangedEvent;
+import com.orensharon.brainq.databinding.ActivityVisualizationBinding;
 import com.orensharon.brainq.mock.Util;
+import com.orensharon.brainq.presentation.vm.VisualizationVM;
 import com.orensharon.brainq.service.HTTPMethods;
 import com.orensharon.brainq.service.HttpQueueIntentService;
 
@@ -21,13 +28,16 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
-public class MainActivity extends AppCompatActivity {
+public class VisualizationActivity extends AppCompatActivity {
 
-    private final static String TAG = MainActivity.class.getSimpleName();
+    private final static String TAG = VisualizationActivity.class.getSimpleName();
 
     private Button sendValidButton;
     private Button sendInvalidButton;
     private GraphView graphView;
+
+    private ActivityVisualizationBinding binding;
+    private VisualizationVM viewModel;
 
     @Inject
     EventBus eventBus;
@@ -35,8 +45,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         ((App)this.getApplicationContext()).applicationComponent.inject(this);
+
+        this.binding = DataBindingUtil.setContentView(this, R.layout.activity_visualization);
+        this.viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(VisualizationVM.class);
+        this.binding.setLifecycleOwner(this);
 
         this.sendValidButton = this.findViewById(R.id.sendValidButton);
         this.sendInvalidButton = this.findViewById(R.id.sendInvalidButton);
