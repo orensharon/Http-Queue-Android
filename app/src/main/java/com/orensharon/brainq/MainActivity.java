@@ -6,20 +6,17 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.Button;
 
-import com.orensharon.brainq.data.Request;
-import com.orensharon.brainq.mock.Mock;
 import com.orensharon.brainq.mock.Util;
 import com.orensharon.brainq.service.HTTPMethods;
-import com.orensharon.brainq.service.HttpService;
+import com.orensharon.brainq.service.HttpQueueIntentService;
 
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
 
-    private HttpService service;
+    private HttpQueueIntentService service;
     private boolean bounded = false;
 
     private Button sendValidButton;
@@ -28,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            HttpService.LocalBinder binder = (HttpService.LocalBinder) service;
+            HttpQueueIntentService.LocalBinder binder = (HttpQueueIntentService.LocalBinder) service;
             MainActivity.this.service = binder.getService();
             bounded = true;
         }
@@ -50,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         this.sendInvalidButton = this.findViewById(R.id.sendInvalidButton);
 
         this.sendValidButton.setOnClickListener(v -> {
-            Intent i = new Intent(this, HttpService.class);
+            Intent i = new Intent(this, HttpQueueIntentService.class);
             i.putExtra("method", HTTPMethods.Method.PUT);
             i.putExtra("endPoint", "https://jsonplaceholder.typicode.com/posts/1");
             i.putExtra("jsonPayload", Util.generatePayload());
@@ -58,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         this.sendInvalidButton.setOnClickListener(v -> {
-            Intent i = new Intent(this, HttpService.class);
+            Intent i = new Intent(this, HttpQueueIntentService.class);
             i.putExtra("method", HTTPMethods.Method.PUT);
             i.putExtra("endPoint", "https://jsonplaceholder.typicode.com/posts/122");
             i.putExtra("jsonPayload", Util.generatePayload());
@@ -70,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Intent i = new Intent(this, HttpService.class);
+        Intent i = new Intent(this, HttpQueueIntentService.class);
 //        this.bindService(i, connection, Context.BIND_AUTO_CREATE);
     }
 

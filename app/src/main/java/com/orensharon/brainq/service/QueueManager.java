@@ -3,8 +3,6 @@ package com.orensharon.brainq.service;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.orensharon.brainq.data.Request;
-
 import java.util.Comparator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,7 +10,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 public class QueueManager {
 
-    private final static String TAG = HttpRequestQueue.class.getSimpleName();
+    private final static String TAG = QueueManager.class.getSimpleName();
 
     private volatile boolean started;
 

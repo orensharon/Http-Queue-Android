@@ -15,21 +15,21 @@ import com.orensharon.brainq.util.IDGenerator;
 
 import javax.inject.Inject;
 
-public class HttpService extends IntentService implements HTTPMethods {
+public class HttpQueueIntentService extends IntentService implements HTTPMethods {
 
 
-    private final static String TAG = HttpService.class.getSimpleName();
+    private final static String TAG = HttpQueueIntentService.class.getSimpleName();
 
     private final IBinder binder = new LocalBinder();
 
     @Inject
     RequestService requestService;
 
-    public HttpService() {
+    public HttpQueueIntentService() {
         this("HttpService");
     }
 
-    public HttpService(String name) {
+    public HttpQueueIntentService(String name) {
         super(name);
     }
 
@@ -78,8 +78,8 @@ public class HttpService extends IntentService implements HTTPMethods {
     }
 
     public class LocalBinder extends Binder {
-        public HttpService getService() {
-            return HttpService.this;
+        public HttpQueueIntentService getService() {
+            return HttpQueueIntentService.this;
         }
     }
 }
