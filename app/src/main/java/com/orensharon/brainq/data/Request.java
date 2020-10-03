@@ -2,8 +2,6 @@ package com.orensharon.brainq.data;
 
 import com.orensharon.brainq.service.HTTPMethods;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Serializable;
 
 public class Request implements Serializable {
@@ -89,7 +87,6 @@ public class Request implements Serializable {
         return (long) Math.pow(2, this.retries) * 1000;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return "Request{" +

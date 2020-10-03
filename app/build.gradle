@@ -47,7 +47,7 @@ dependencies {
     implementation 'javax.inject:javax.inject:1'
 
     implementation 'com.android.volley:volley:1.1.1'
-    implementation 'com.diogobernardino:williamchart:3.7.1'
+    implementation 'com.jjoe64:graphview:4.2.2'
 
     implementation 'org.greenrobot:eventbus:3.1.1'
 

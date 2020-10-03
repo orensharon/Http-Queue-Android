@@ -2,10 +2,14 @@ package com.orensharon.brainq;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 import com.orensharon.brainq.data.event.RequestStateChangedEvent;
 import com.orensharon.brainq.mock.Util;
 import com.orensharon.brainq.service.HTTPMethods;
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button sendValidButton;
     private Button sendInvalidButton;
+    private GraphView graphView;
 
     @Inject
     EventBus eventBus;
@@ -35,6 +40,25 @@ public class MainActivity extends AppCompatActivity {
 
         this.sendValidButton = this.findViewById(R.id.sendValidButton);
         this.sendInvalidButton = this.findViewById(R.id.sendInvalidButton);
+        this.graphView = this.findViewById(R.id.graph);
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[]{
+                new DataPoint(0, 1),
+                new DataPoint(1, 5),
+                new DataPoint(2, 3),
+                new DataPoint(3, 2),
+                new DataPoint(4, 6)
+        });
+        series.setColor(Color.RED);
+        this.graphView.addSeries(series);
+        LineGraphSeries<DataPoint> series1 = new LineGraphSeries<>(new DataPoint[]{
+                new DataPoint(0, 2),
+                new DataPoint(1, 5),
+                new DataPoint(2, 1),
+                new DataPoint(3, 3),
+                new DataPoint(4, 4)
+        });
+        series1.setColor(Color.BLUE);
+        this.graphView.addSeries(series1);
 
         this.sendValidButton.setOnClickListener(v -> {
             Intent i = new Intent(this, HttpQueueIntentService.class);
