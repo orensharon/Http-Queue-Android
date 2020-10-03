@@ -1,41 +1,31 @@
 package com.orensharon.brainq;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.util.Log;
 import android.widget.Button;
 
+import com.orensharon.brainq.data.event.RequestStateChangedEvent;
 import com.orensharon.brainq.mock.Util;
 import com.orensharon.brainq.service.HTTPMethods;
 import com.orensharon.brainq.service.HttpQueueIntentService;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
 
-    private HttpQueueIntentService service;
-    private boolean bounded = false;
-
     private Button sendValidButton;
     private Button sendInvalidButton;
 
-    private final ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            HttpQueueIntentService.LocalBinder binder = (HttpQueueIntentService.LocalBinder) service;
-            MainActivity.this.service = binder.getService();
-            bounded = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            bounded = false;
-            unbindService(connection);
-        }
-    };
+    @Inject
+    EventBus eventBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +55,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        Intent i = new Intent(this, HttpQueueIntentService.class);
-//        this.bindService(i, connection, Context.BIND_AUTO_CREATE);
+    protected void onResume() {
+        super.onResume();
+        this.eventBus.register(this);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        this.unbindService(this.connection);
+    protected void onPause() {
+        super.onPause();
+        this.eventBus.unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRequestStateChangedEvent(RequestStateChangedEvent event) {
+        Log.i(TAG, "onRequestStateChangedEvent " + event.toString());
     }
 }

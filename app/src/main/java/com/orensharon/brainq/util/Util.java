@@ -1,6 +1,7 @@
 package com.orensharon.brainq.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class Util {
@@ -14,4 +15,7 @@ public class Util {
         return format;
     }
 
+    public static String getDateStringByTimeStamp(long timestamp) {
+        return getSimpleDateFormat().format(new Date(timestamp));
+    }
 }

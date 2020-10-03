@@ -6,6 +6,9 @@ import android.util.Log;
 import com.orensharon.BrainQ;
 import com.orensharon.brainq.data.Request;
 import com.orensharon.brainq.data.RequestRepository;
+import com.orensharon.brainq.data.event.RequestStateChangedEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class RequestService {
 
@@ -14,11 +17,13 @@ public class RequestService {
     private final RequestRepository repository;
     private final QueueManager queueManager;
     private final RequestDispatcher dispatcher;
+    private final EventBus eventBus;
 
-    public RequestService(RequestRepository repository, QueueManager queueManager, RequestDispatcher dispatcher) {
+    public RequestService(RequestRepository repository, QueueManager queueManager, RequestDispatcher dispatcher, EventBus eventBus) {
         this.repository = repository;
         this.queueManager = queueManager;
         this.dispatcher = dispatcher;
+        this.eventBus = eventBus;
     }
 
     public void start() {
@@ -55,16 +60,16 @@ public class RequestService {
     }
 
     private void onDispatcherResponse(int requestId, boolean state) {
+        Log.i(TAG, "onDispatcherResponse - requestId:" + requestId + " state: " + state);
         long ts = SystemClock.elapsedRealtime();
         Request request = this.repository.getById(requestId);
         request.updateState(state, ts);
         this.repository.save(request);
+        long rtc = System.currentTimeMillis();
+        this.eventBus.post(new RequestStateChangedEvent(requestId, rtc, state));
         if (state) {
-            Log.i(TAG, "onDispatcherResponse - Request success: " + request.toString());
             return;
         }
-        // State failed - add back to queue
-        Log.i(TAG, "onDispatcherResponse - Request failed: " + request.toString());
         this.addToQueue(request);
     }
 

@@ -11,6 +11,8 @@ import com.orensharon.brainq.service.QueueManager;
 import com.orensharon.brainq.service.RequestDispatcher;
 import com.orensharon.brainq.service.RequestService;
 
+import org.greenrobot.eventbus.EventBus;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -32,8 +34,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    RequestService provideRequestService(RequestRepository repository, RequestDispatcher dispatcher, QueueManager queueManager) {
-        return new RequestService(repository, queueManager, dispatcher);
+    RequestService provideRequestService(RequestRepository repository, RequestDispatcher dispatcher, QueueManager queueManager, EventBus eventBus) {
+        return new RequestService(repository, queueManager, dispatcher, eventBus);
     }
 
     @Singleton
@@ -54,4 +56,12 @@ public class ApplicationModule {
         return new QueueManager();
     }
 
+    @Singleton
+    @Provides
+    EventBus provideEventBus() {
+        return EventBus.builder()
+                .logNoSubscriberMessages(false)
+                .logSubscriberExceptions(true)
+                .installDefaultEventBus();
+    }
 }
