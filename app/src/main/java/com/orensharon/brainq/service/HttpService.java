@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 
 import com.orensharon.brainq.App;
 import com.orensharon.brainq.data.Request;
-import com.orensharon.brainq.data.RequestRepository;
 import com.orensharon.brainq.util.IDGenerator;
 
 import javax.inject.Inject;
@@ -24,7 +23,7 @@ public class HttpService extends IntentService implements HTTPMethods {
     private final IBinder binder = new LocalBinder();
 
     @Inject
-    RequestRepository requestRepository;
+    RequestService requestService;
 
     public HttpService() {
         this("HttpService");
@@ -70,7 +69,7 @@ public class HttpService extends IntentService implements HTTPMethods {
         int id = IDGenerator.generate();
         Request request = Request.put(id, endpoint, jsonPayload);
         Log.i(TAG, "put: " + request.toString());
-        this.requestRepository.add(request);
+        this.requestService.add(request);
     }
 
     @Override

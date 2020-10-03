@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.orensharon.brainq.di.ApplicationComponent;
 import com.orensharon.brainq.di.DaggerApplicationComponent;
-import com.orensharon.brainq.service.HttpRequestQueue;
+import com.orensharon.brainq.service.RequestService;
 
 import javax.inject.Inject;
 
@@ -13,7 +13,7 @@ public class App extends Application {
     public ApplicationComponent applicationComponent;
 
     @Inject
-    HttpRequestQueue httpRequestQueue;
+    RequestService requestService;
 
     @Override
     public void onCreate() {
@@ -24,6 +24,6 @@ public class App extends Application {
                 .build();
         this.applicationComponent.inject(this);
 
-        this.httpRequestQueue.listen();
+        this.requestService.start();
     }
 }

@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class HttpRequestQueue {
-
+/*
     private final static String TAG = HttpRequestQueue.class.getSimpleName();
 
 
@@ -114,5 +114,5 @@ public class HttpRequestQueue {
 
     public void setListener(RequestStateListener listener) {
         this.listener = listener;
-    }
+    }*/
 }

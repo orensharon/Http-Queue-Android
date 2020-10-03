@@ -13,13 +13,9 @@ import com.orensharon.brainq.data.Request;
 import com.orensharon.brainq.mock.Mock;
 import com.orensharon.brainq.mock.Util;
 import com.orensharon.brainq.service.HTTPMethods;
-import com.orensharon.brainq.service.HttpRequestQueue;
 import com.orensharon.brainq.service.HttpService;
-import com.orensharon.brainq.service.RequestStateListener;
 
-import javax.inject.Inject;
-
-public class MainActivity extends AppCompatActivity implements RequestStateListener {
+public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
 
@@ -28,9 +24,6 @@ public class MainActivity extends AppCompatActivity implements RequestStateListe
 
     private Button sendValidButton;
     private Button sendInvalidButton;
-
-    @Inject
-    HttpRequestQueue httpRequestQueue;
 
     private final ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -71,8 +64,6 @@ public class MainActivity extends AppCompatActivity implements RequestStateListe
             i.putExtra("jsonPayload", Util.generatePayload());
             this.startService(i);
         });
-        this.httpRequestQueue.setListener(this);
-        this.httpRequestQueue.listen();
         //Mock.startSendMock(this.getApplicationContext());
     }
 
@@ -87,12 +78,5 @@ public class MainActivity extends AppCompatActivity implements RequestStateListe
     protected void onDestroy() {
         super.onDestroy();
 //        this.unbindService(this.connection);
-        this.httpRequestQueue.setListener(null);
-        this.httpRequestQueue.terminate();
-    }
-
-    @Override
-    public void onRequestStateChange(Request request) {
-        Log.i(TAG, "onRequestStateChange");
     }
 }

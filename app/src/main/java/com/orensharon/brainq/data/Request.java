@@ -6,6 +6,9 @@ import java.io.Serializable;
 
 public class Request implements Serializable {
 
+    // X exponential retries;
+    public static int MAX_BACKOFF_LIMIT = 3;
+
     private final int id;
     private final String endpoint;
     private final String jsonPayload;
@@ -47,10 +50,12 @@ public class Request implements Serializable {
         this.retries = -1;
     }
 
-    public boolean isReady(long ts) {
-        long timeElapsed = ts - this.lastRetryMs;
-        long timeToWait = (long) Math.pow(2, retries) * 1000;
-        return timeElapsed >= timeToWait;
+    public boolean isBackoffLimitReached() {
+        return this.retries > MAX_BACKOFF_LIMIT - 1;
+    }
+
+    public long getScheduledTs() {
+        return this.lastRetryMs + (long) Math.pow(2, this.retries) * 1000;
     }
 
     public boolean isSuccess() {
@@ -67,14 +72,6 @@ public class Request implements Serializable {
 
     public String getPayload() {
         return jsonPayload;
-    }
-
-    public int getRetries() {
-        return retries;
-    }
-
-    public long getLastRetryMs() {
-        return lastRetryMs;
     }
 
     public int getId() {

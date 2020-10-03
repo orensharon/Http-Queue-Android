@@ -1,27 +1,29 @@
 package com.orensharon.brainq.data;
 
-import java.util.Comparator;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RequestRepository {
-    private final PriorityBlockingQueue<Request> queue;
+
+    private final Map<Integer, Request> requests;
 
     public RequestRepository() {
-        this.queue = new PriorityBlockingQueue<>(11, new RetryComparator());
+        this.requests = new HashMap<>();
     }
 
     public void add(Request request) {
-        this.queue.add(new Request(request));
+        this.requests.put(request.getId(), new Request(request));
     }
 
-    public Request take() throws InterruptedException {
-        return this.queue.take();
-    }
-
-    public static class RetryComparator implements Comparator<Request> {
-        @Override
-        public int compare(Request x, Request y) {
-            return Integer.compare(x.getRetries(), y.getRetries());
+    public Request getById(int requestId) {
+        Request request =  this.requests.get(requestId);
+        if (request == null) {
+            return null;
         }
+        return new Request(request);
+    }
+
+    public void save(Request request) {
+        this.requests.put(request.getId(), new Request(request));
     }
 }

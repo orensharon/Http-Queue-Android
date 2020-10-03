@@ -7,7 +7,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.orensharon.brainq.App;
 import com.orensharon.brainq.data.RequestRepository;
-import com.orensharon.brainq.service.HttpRequestQueue;
+import com.orensharon.brainq.service.QueueManager;
+import com.orensharon.brainq.service.RequestDispatcher;
+import com.orensharon.brainq.service.RequestService;
 
 import javax.inject.Singleton;
 
@@ -30,14 +32,26 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    HttpRequestQueue provideHttpRequestQueue(RequestQueue requestQueue, RequestRepository requestRepository) {
-        return new HttpRequestQueue(requestQueue, requestRepository);
+    RequestService provideRequestService(RequestRepository repository, RequestDispatcher dispatcher, QueueManager queueManager) {
+        return new RequestService(repository, queueManager, dispatcher);
+    }
+
+    @Singleton
+    @Provides
+    RequestDispatcher provideRequestDispatcher(RequestQueue requestQueue) {
+        return new RequestDispatcher(requestQueue);
     }
 
     @Singleton
     @Provides
     RequestQueue provideRequestQueue(Context context) {
         return Volley.newRequestQueue(context);
+    }
+
+    @Singleton
+    @Provides
+    QueueManager provideQueueManager() {
+        return new QueueManager();
     }
 
 }
