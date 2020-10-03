@@ -2,12 +2,11 @@ package com.orensharon.brainq.data;
 
 import com.orensharon.brainq.service.HTTPMethods;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 
 public class Request implements Serializable {
-
-    // X exponential retries;
-    public static int MAX_BACKOFF_LIMIT = 3;
 
     private final int id;
     private final String endpoint;
@@ -38,24 +37,16 @@ public class Request implements Serializable {
         return new Request(id ,endpoint, jsonPayload, HTTPMethods.Method.PUT);
     }
 
-    public void failed(long ts) {
-        if (this.isSuccess()) {
+    public void updateState(boolean state, long ts) {
+        if (!state) {
+            this.failed(ts);
             return;
         }
-        this.lastRetryMs = ts;
-        this.retries++;
+        this.success();
     }
 
-    public void success() {
-        this.retries = -1;
-    }
-
-    public boolean isBackoffLimitReached() {
-        return this.retries > MAX_BACKOFF_LIMIT - 1;
-    }
-
-    public long getScheduledTs() {
-        return this.lastRetryMs + (long) Math.pow(2, this.retries) * 1000;
+    public long getScheduledTime() {
+        return this.lastRetryMs + this.calculateNextRetryInterval();
     }
 
     public boolean isSuccess() {
@@ -78,6 +69,27 @@ public class Request implements Serializable {
         return id;
     }
 
+    public int getReties() {
+        return this.retries;
+    }
+
+    private void failed(long ts) {
+        if (this.isSuccess()) {
+            return;
+        }
+        this.lastRetryMs = ts;
+        this.retries++;
+    }
+
+    private void success() {
+        this.retries = -1;
+    }
+
+    private long calculateNextRetryInterval() {
+        return (long) Math.pow(2, this.retries) * 1000;
+    }
+
+    @NotNull
     @Override
     public String toString() {
         return "Request{" +

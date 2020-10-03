@@ -24,10 +24,9 @@ public class QueueManager {
     }
 
 
-    public void add(int requestId, long scheduledTs, Runnable runnable) {
+    public void enqueue(int requestId, long scheduledTs, Runnable runnable) {
         this.requests.add(new QueuedRequest(requestId, scheduledTs, runnable));
     }
-
 
     public void listen() {
         if (this.isStarted()) {

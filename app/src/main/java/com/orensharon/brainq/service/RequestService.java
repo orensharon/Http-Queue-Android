@@ -3,10 +3,9 @@ package com.orensharon.brainq.service;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.orensharon.BrainQ;
 import com.orensharon.brainq.data.Request;
 import com.orensharon.brainq.data.RequestRepository;
-
-import org.jetbrains.annotations.NotNull;
 
 public class RequestService {
 
@@ -32,42 +31,44 @@ public class RequestService {
     }
 
     private void addToQueue(Request request) {
-        if (request.isSuccess() || request.isBackoffLimitReached()) {
-            Log.i(TAG, "addToQueue - back-off limit reached: " + request.toString());
+        if (request.isSuccess()) {
+            // Already sent successfully
             return;
         }
-        this.queueManager.add(request.getId(), request.getScheduledTs(), this.onRequestReady(request.getId()));
+        boolean backoffLimitReached = this.isBackoffLimitReached(request.getReties());
+        if (backoffLimitReached) {
+            Log.i(TAG, "addToQueue - Backoff limit reached: " + request.toString());
+            return;
+        }
+        Runnable dequeueListener = () -> this.onRequestReady(request.getId());
+        this.queueManager.enqueue(request.getId(), request.getScheduledTime(), dequeueListener);
     }
 
-    @NotNull
-    private Runnable onRequestReady(int requestId) {
-        return () -> {
-            Log.i(TAG, "onRequestReady requestId=" + requestId);
-            Request request = this.repository.getById(requestId);
-            int method = request.getMethod();
-            String url = request.getEndpoint();
-            String payload = request.getPayload();
-            this.dispatcher.dispatch(method, url, payload, this.onDispatcherResponse(requestId));
-        };
+    private void onRequestReady(int requestId) {
+        Log.i(TAG, "onRequestReady requestId=" + requestId);
+        Request request = this.repository.getById(requestId);
+        int method = request.getMethod();
+        String url = request.getEndpoint();
+        String payload = request.getPayload();
+        RequestDispatcher.Callback dispatchedCallback = (state) -> this.onDispatcherResponse(requestId, state);
+        this.dispatcher.dispatch(method, url, payload, dispatchedCallback);
     }
 
-    @NotNull
-    private RequestDispatcher.Callback onDispatcherResponse(int requestId) {
-        return state -> {
-            long ts = SystemClock.elapsedRealtime();
-            Request request = this.repository.getById(requestId);
-            // TODO: make sure dispatched state?
-            if (!state) {
-                request.failed(ts);
-                Log.i(TAG, "onDispatcherResponse - Request failed: " + request.toString());
-            } else {
-                request.success();
-                Log.i(TAG, "onDispatcherResponse - Request success: " + request.toString());
-            }
-            this.repository.save(request);
-            if (!state) {
-                this.addToQueue(request);
-            }
-        };
+    private void onDispatcherResponse(int requestId, boolean state) {
+        long ts = SystemClock.elapsedRealtime();
+        Request request = this.repository.getById(requestId);
+        request.updateState(state, ts);
+        this.repository.save(request);
+        if (state) {
+            Log.i(TAG, "onDispatcherResponse - Request success: " + request.toString());
+            return;
+        }
+        // State failed - add back to queue
+        Log.i(TAG, "onDispatcherResponse - Request failed: " + request.toString());
+        this.addToQueue(request);
+    }
+
+    private boolean isBackoffLimitReached(int retires) {
+        return retires > BrainQ.MAX_BACKOFF_LIMIT - 1;
     }
 }
