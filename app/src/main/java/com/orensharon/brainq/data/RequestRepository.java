@@ -1,14 +1,14 @@
 package com.orensharon.brainq.data;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RequestRepository {
 
     private final Map<Integer, Request> requests;
 
     public RequestRepository() {
-        this.requests = new HashMap<>();
+        this.requests = new ConcurrentHashMap<>();
     }
 
     public void add(Request request) {
