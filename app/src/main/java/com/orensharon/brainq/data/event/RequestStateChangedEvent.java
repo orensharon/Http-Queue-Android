@@ -1,6 +1,8 @@
 package com.orensharon.brainq.data.event;
 
-import com.orensharon.brainq.util.Util;
+import com.orensharon.brainq.util.DateUtil;
+
+import java.util.Date;
 
 public class RequestStateChangedEvent {
     public final long requestId;
@@ -17,7 +19,7 @@ public class RequestStateChangedEvent {
     public String toString() {
         return "RequestStateChangedEvent{" +
                 "requestId=" + requestId +
-                ", ts=" + Util.getDateStringByTimeStamp(this.ts) +
+                ", ts=" + new Date(this.ts).toString() +
                 ", state=" + state +
                 '}';
     }

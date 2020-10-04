@@ -11,8 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
-        android:layout_height="match_parent"
-        tools:context=".presentation.view.VisualizationActivity">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,17 +22,45 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="send valid"
+                android:onClick="@{() -> viewModel.onValidClicked()}"
                 android:id="@+id/sendValidButton"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="send invalid"
+                android:onClick="@{() -> viewModel.onInvalidClicked()}"
                 android:id="@+id/sendInvalidButton"/>
         </LinearLayout>
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/group"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:checkedButton="@={viewModel.getTimeScale()}">
+            <RadioButton
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/hour"
+                android:text="Hour"/>
+
+            <RadioButton
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/day"
+                android:text="Day"/>
+
+            <RadioButton
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/week"
+                android:text="Week"/>
+        </RadioGroup>
         <com.jjoe64.graphview.GraphView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:seriesType="points"
             android:id="@+id/graph" />
     </LinearLayout>
 </layout>
