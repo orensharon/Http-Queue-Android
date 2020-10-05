@@ -12,6 +12,7 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.orensharon.BrainQ;
 import com.orensharon.brainq.App;
 import com.orensharon.brainq.R;
 import com.orensharon.brainq.databinding.ActivityVisualizationBinding;
@@ -58,7 +59,7 @@ public class VisualizationActivity extends AppCompatActivity {
         this.binding.setLifecycleOwner(this);
         this.binding.setViewModel(this.viewModel);
 
-        this.graphView = this.findViewById(R.id.graph);
+        this.graphView = binding.graph;
 
         // Init x axises
         this.hourlyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getHourlyDateInFormat());
@@ -81,8 +82,7 @@ public class VisualizationActivity extends AppCompatActivity {
         this.graphView.addSeries(this.failedSeries);
 
         this.graphView.getViewport().setMinX(this.start);
-        this.graphView.getGridLabelRenderer().setNumHorizontalLabels(5);
-        this.graphView.getGridLabelRenderer().setHumanRounding(false);
+        this.graphView.getGridLabelRenderer().setNumHorizontalLabels(3);
         this.graphView.getViewport().setXAxisBoundsManual(true);
 
         this.initObservers();
@@ -125,15 +125,15 @@ public class VisualizationActivity extends AppCompatActivity {
         this.startService(i);
     }
 
-    private void applyTimeScale(Integer id) {
-        switch (id) {
-            case R.id.hour:
+    private void applyTimeScale(int  timeScale) {
+        switch (timeScale) {
+            case BrainQ.TimeScale.HOURLY:
                 this.applyHourly();
                 break;
-            case R.id.day:
+            case BrainQ.TimeScale.DAILY:
                 this.applyDaily();
                 break;
-            case R.id.week:
+            case BrainQ.TimeScale.WEEKLY:
                 this.applyWeekly();
                 break;
         }

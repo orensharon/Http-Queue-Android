@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.orensharon.brainq.R;
+import com.orensharon.BrainQ;
 import com.orensharon.brainq.data.event.RequestStateChangedEvent;
 import com.orensharon.brainq.presentation.model.RequestEvent;
 import com.orensharon.brainq.presentation.model.Visualization;
@@ -38,7 +38,7 @@ public class VisualizationVM extends ViewModel {
         this.invalidClick = new SingleLiveEvent<>();
         this.successEvent = new MutableLiveData<>();
         this.failedEvent = new MutableLiveData<>();
-        this.timeScale.setValue(R.id.hour);
+        this.timeScale.setValue(BrainQ.TimeScale.HOURLY);
         this.eventBus.register(this);
     }
 
