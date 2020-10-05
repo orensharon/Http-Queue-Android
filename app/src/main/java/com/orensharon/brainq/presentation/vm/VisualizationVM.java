@@ -1,41 +1,90 @@
 package com.orensharon.brainq.presentation.vm;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.orensharon.brainq.R;
+import com.orensharon.brainq.data.event.RequestStateChangedEvent;
+import com.orensharon.brainq.presentation.model.RequestEvent;
+import com.orensharon.brainq.presentation.model.Visualization;
 import com.orensharon.brainq.util.SingleLiveEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class VisualizationVM extends ViewModel {
 
-    private final MutableLiveData<Integer> timeScale;
-    private final SingleLiveEvent<Integer> sendEvent;
+    private final static String TAG = VisualizationVM.class.getSimpleName();
 
-    public VisualizationVM() {
+    private Visualization visualizationModel;
+
+    private final MutableLiveData<Integer> timeScale;
+    private final SingleLiveEvent<Boolean> validClick;
+    private final SingleLiveEvent<Boolean> invalidClick;
+    private final MutableLiveData<RequestEvent> successEvent;
+    private final MutableLiveData<RequestEvent> failedEvent;
+
+    private final EventBus eventBus;
+
+    public VisualizationVM(EventBus eventBus) {
+        this.eventBus = eventBus;
+        this.visualizationModel = new Visualization();
         this.timeScale = new MutableLiveData<>();
-        this.sendEvent = new SingleLiveEvent<>();
-        this.timeScale.setValue(R.id.week);
+        this.validClick = new SingleLiveEvent<>();
+        this.invalidClick = new SingleLiveEvent<>();
+        this.successEvent = new MutableLiveData<>();
+        this.failedEvent = new MutableLiveData<>();
+        this.timeScale.setValue(R.id.hour);
+        this.eventBus.register(this);
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        Log.i(TAG, "onCleared");
+        this.eventBus.unregister(this);
     }
 
     public MutableLiveData<Integer> getTimeScale() {
         return this.timeScale;
     }
 
-    public LiveData<Integer> getSendEvent() {
-        return sendEvent;
+    public LiveData<Boolean> getValidClick() {
+        return validClick;
     }
 
-    public void addEvent(long requestId, boolean state, long ts) {
-
+    public LiveData<Boolean> getInvalidClick() {
+        return invalidClick;
     }
 
+    public LiveData<RequestEvent> getLastSuccessEvent() {
+        return successEvent;
+    }
+
+    public LiveData<RequestEvent> getLastFailedEvent() {
+        return failedEvent;
+    }
 
     public void onValidClicked() {
-        this.sendEvent.setValue(0);
+        this.validClick.setValue(true);
     }
 
     public void onInvalidClicked() {
-        this.sendEvent.setValue(1);
+        this.invalidClick.setValue(true);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRequestStateChangedEvent(RequestStateChangedEvent event) {
+        Log.i(TAG, "onRequestStateChangedEvent " + event.toString());
+        RequestEvent requestEvent = this.visualizationModel.add(event.requestId, event.state, event.ts);
+        if (event.state) {
+            this.successEvent.setValue(requestEvent);
+            return;
+        }
+        this.failedEvent.setValue(requestEvent);
     }
 }

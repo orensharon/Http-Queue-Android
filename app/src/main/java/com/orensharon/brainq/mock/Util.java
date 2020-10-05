@@ -1,5 +1,7 @@
 package com.orensharon.brainq.mock;
 
+import com.orensharon.brainq.BuildConfig;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,6 +9,15 @@ import org.json.JSONObject;
 import java.util.Random;
 
 public class Util {
+
+
+    public static String getInvalidURL() {
+        return String.format("%s/%s", BuildConfig.API_URL, "posts/122");
+    }
+
+    public static String getValidURL() {
+        return String.format("%s/%s", BuildConfig.API_URL, "posts/1");
+    }
 
     public static String generatePayload() {
         int number = generateNumber();

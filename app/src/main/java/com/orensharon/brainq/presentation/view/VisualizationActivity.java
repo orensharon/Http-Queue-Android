@@ -7,30 +7,28 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.PointsGraphSeries;
+import com.jjoe64.graphview.series.LineGraphSeries;
 import com.orensharon.brainq.App;
 import com.orensharon.brainq.R;
-import com.orensharon.brainq.data.event.RequestStateChangedEvent;
 import com.orensharon.brainq.databinding.ActivityVisualizationBinding;
+import com.orensharon.brainq.mock.Mock;
 import com.orensharon.brainq.mock.Util;
+import com.orensharon.brainq.presentation.model.RequestEvent;
 import com.orensharon.brainq.presentation.vm.VisualizationVM;
+import com.orensharon.brainq.presentation.vm.VisualizationViewModelFactory;
 import com.orensharon.brainq.service.HTTPMethods;
 import com.orensharon.brainq.service.HttpQueueIntentService;
 import com.orensharon.brainq.util.DateUtil;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Calendar;
 import java.util.Date;
 
 import javax.inject.Inject;
+
 
 public class VisualizationActivity extends AppCompatActivity {
 
@@ -38,15 +36,17 @@ public class VisualizationActivity extends AppCompatActivity {
 
     private GraphView graphView;
 
-    private PointsGraphSeries<DataPoint> successSeries;
-    private PointsGraphSeries<DataPoint> failedSeries;
+    private LineGraphSeries<DataPoint> successSeries;
+    private LineGraphSeries<DataPoint> failedSeries;
     private DateAsXAxisLabelFormatter hourlyFormat, dailyFormat, weeklyFormat;
 
     private ActivityVisualizationBinding binding;
     private VisualizationVM viewModel;
 
+    private long start;
+
     @Inject
-    EventBus eventBus;
+    VisualizationViewModelFactory visualizationViewModelFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class VisualizationActivity extends AppCompatActivity {
         ((App)this.getApplicationContext()).applicationComponent.inject(this);
 
         this.binding = DataBindingUtil.setContentView(this, R.layout.activity_visualization);
-        this.viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(VisualizationVM.class);
+        this.viewModel = new ViewModelProvider(this, this.visualizationViewModelFactory).get(VisualizationVM.class);
         this.binding.setLifecycleOwner(this);
         this.binding.setViewModel(this.viewModel);
 
@@ -65,77 +65,56 @@ public class VisualizationActivity extends AppCompatActivity {
         this.dailyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getDailyDateInFormat());
         this.weeklyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getWeeklyDateInFormat());
 
-        this.failedSeries = new PointsGraphSeries<>();
-        this.failedSeries.setColor(Color.RED);
-        this.failedSeries.setShape(PointsGraphSeries.Shape.POINT);
+        Calendar calendar = Calendar.getInstance();
+        this.start = calendar.getTimeInMillis();
 
-        this.successSeries = new PointsGraphSeries<>();
+        this.successSeries = new LineGraphSeries<>(new DataPoint[]{
+                new DataPoint(new Date(this.start), 0)
+        });
+        this.failedSeries = new LineGraphSeries<>(new DataPoint[]{
+                new DataPoint(new Date(this.start), 0)
+        });
         this.successSeries.setColor(Color.GREEN);
-        this.successSeries.setShape(PointsGraphSeries.Shape.TRIANGLE);
+        this.failedSeries.setColor(Color.RED);
 
         this.graphView.addSeries(this.successSeries);
         this.graphView.addSeries(this.failedSeries);
 
-        this.graphView.getViewport().setMinX(System.currentTimeMillis());
-        this.graphView.getGridLabelRenderer().setNumHorizontalLabels(3);
+        this.graphView.getViewport().setMinX(this.start);
+        this.graphView.getGridLabelRenderer().setNumHorizontalLabels(5);
         this.graphView.getGridLabelRenderer().setHumanRounding(false);
         this.graphView.getViewport().setXAxisBoundsManual(true);
-        this.graphView.getViewport().setYAxisBoundsManual(true);
-        this.graphView.getViewport().setMinY(0);
-        this.graphView.getViewport().setMaxY(1);
 
-        this.viewModel.getSendEvent().observe(this, type -> {
-            if (type == 0) {
-                this.sendValid();
-                return;
-            }
-            this.sendInvalid();
-        });
-        this.viewModel.getTimeScale().observe(this, id -> {
-            switch (id) {
-                case R.id.hour:
-                    this.applyHourly();
-                    break;
-                case R.id.day:
-                    this.applyDaily();
-                    break;
-                case R.id.week:
-                    this.applyWeekly();
-                    break;
-            }
-        });
-        //Mock.startSendMock(this.getApplicationContext());
+        this.initObservers();
+        Mock.startSendMock(this.getApplicationContext());
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        this.eventBus.register(this);
+    private void initObservers() {
+        this.viewModel.getValidClick().observe(this, b -> this.sendValid());
+        this.viewModel.getInvalidClick().observe(this, b -> this.sendInvalid());
+        this.viewModel.getLastSuccessEvent().observe(this, this::appendSuccessEvent);
+        this.viewModel.getLastFailedEvent().observe(this, this::appendFailedEvent);
+        this.viewModel.getTimeScale().observe(this, this::applyTimeScale);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        this.eventBus.unregister(this);
+    private void appendSuccessEvent(RequestEvent event) {
+        this.appendNewEvent(this.successSeries, event);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRequestStateChangedEvent(RequestStateChangedEvent event) {
-        Log.i(TAG, "onRequestStateChangedEvent " + event.toString());
-        this.viewModel.addEvent(event.requestId, event.state, event.ts);
-        if (event.state) {
-            this.addSuccess(event.ts);
-            return;
-        }
-        this.addFailed(event.ts);
+    private void appendFailedEvent(RequestEvent event) {
+        this.appendNewEvent(this.failedSeries, event);
+    }
+
+    private void appendNewEvent(LineGraphSeries<DataPoint> series, RequestEvent event) {
+        series.appendData(new DataPoint(new Date(event.ts), event.number), false, 1000);
     }
 
     private void sendInvalid() {
-        this.send(HTTPMethods.Method.PUT, "https://jsonplaceholder.typicode.com/posts/122", Util.generatePayload());
+        this.send(HTTPMethods.Method.PUT, Util.getInvalidURL(), Util.generatePayload());
     }
 
     private void sendValid() {
-        this.send(HTTPMethods.Method.PUT, "https://jsonplaceholder.typicode.com/posts/1", Util.generatePayload());
+        this.send(HTTPMethods.Method.PUT, Util.getValidURL(), Util.generatePayload());
     }
 
     private void send(int method, String endPoint, String payload) {
@@ -146,17 +125,23 @@ public class VisualizationActivity extends AppCompatActivity {
         this.startService(i);
     }
 
-    private void addFailed(long  ts) {
-        this.failedSeries.appendData(new DataPoint(new Date(ts), 0), false, 60);
-    }
-
-    private void addSuccess(long ts) {
-        this.successSeries.appendData(new DataPoint(new Date(ts), 1), false, 60);
+    private void applyTimeScale(Integer id) {
+        switch (id) {
+            case R.id.hour:
+                this.applyHourly();
+                break;
+            case R.id.day:
+                this.applyDaily();
+                break;
+            case R.id.week:
+                this.applyWeekly();
+                break;
+        }
     }
 
     private void applyHourly() {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR, 1);
+        calendar.add(Calendar.HOUR_OF_DAY, 1);
         this.graphView.getGridLabelRenderer().setLabelFormatter(this.hourlyFormat);
         this.graphView.getViewport().setMaxX(calendar.getTimeInMillis());
     }

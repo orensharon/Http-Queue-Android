@@ -1,15 +1,13 @@
 package com.orensharon.brainq.data.event;
 
-import com.orensharon.brainq.util.DateUtil;
-
 import java.util.Date;
 
 public class RequestStateChangedEvent {
-    public final long requestId;
+    public final int requestId;
     public final long ts;
     public final boolean state;
 
-    public RequestStateChangedEvent(long requestId, long ts, boolean state) {
+    public RequestStateChangedEvent(int requestId, long ts, boolean state) {
         this.requestId = requestId;
         this.ts = ts;
         this.state = state;

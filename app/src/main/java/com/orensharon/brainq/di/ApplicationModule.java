@@ -7,6 +7,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.orensharon.brainq.App;
 import com.orensharon.brainq.data.RequestRepository;
+import com.orensharon.brainq.presentation.vm.VisualizationViewModelFactory;
 import com.orensharon.brainq.service.QueueManager;
 import com.orensharon.brainq.service.RequestDispatcher;
 import com.orensharon.brainq.service.RequestService;
@@ -63,5 +64,10 @@ public class ApplicationModule {
                 .logNoSubscriberMessages(false)
                 .logSubscriberExceptions(true)
                 .installDefaultEventBus();
+    }
+
+    @Provides
+    VisualizationViewModelFactory provideVisualizationViewModelFactory(EventBus eventBus) {
+        return new VisualizationViewModelFactory(eventBus);
     }
 }
