@@ -2,8 +2,10 @@ package com.orensharon.brainq.service;
 
 import android.util.Log;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,9 +26,10 @@ public class RequestDispatcher {
 
     public void dispatch(int method, String url, String payload, Callback callback) {
         Log.i(TAG, "Dispatch url: " + url);
+        int transformMethod = this.transformMethod(method);
         try {
             JsonObjectRequest req = new JsonObjectRequest(
-                    method,
+                    transformMethod,
                     url,
                     new JSONObject(payload),
                     response -> callback.onHandled(true),
@@ -35,6 +38,15 @@ public class RequestDispatcher {
         } catch (JSONException e) {
             e.printStackTrace();
             callback.onHandled(false);
+        }
+    }
+
+    private int transformMethod(int method) {
+        switch (method) {
+            case HTTPMethods.Method.PUT:
+                return Request.Method.PUT;
+            default:
+                return -2;
         }
     }
 }
