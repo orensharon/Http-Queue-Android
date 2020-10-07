@@ -23,6 +23,7 @@ public class VisualizationVM extends ViewModel {
     private Visualization visualizationModel;
 
     private final MutableLiveData<Integer> timeScale;
+    private final MutableLiveData<Integer> ratio;
     private final SingleLiveEvent<Boolean> validClick;
     private final SingleLiveEvent<Boolean> invalidClick;
     private final SingleLiveEvent<RequestEvent> successEvent;
@@ -34,11 +35,13 @@ public class VisualizationVM extends ViewModel {
         this.eventBus = eventBus;
         this.visualizationModel = new Visualization();
         this.timeScale = new MutableLiveData<>();
+        this.ratio = new MutableLiveData<>();
         this.validClick = new SingleLiveEvent<>();
         this.invalidClick = new SingleLiveEvent<>();
         this.successEvent = new SingleLiveEvent<>();
         this.failedEvent = new SingleLiveEvent<>();
         this.timeScale.setValue(BrainQ.TimeScale.HOURLY);
+        this.ratio.setValue(this.visualizationModel.getSuccessRatio());
     }
 
     public void init() {
@@ -82,14 +85,20 @@ public class VisualizationVM extends ViewModel {
         this.invalidClick.setValue(true);
     }
 
+    public LiveData<Integer> getRatio() {
+        return ratio;
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRequestStateChangedEvent(RequestStateChangedEvent event) {
         Log.i(TAG, "onRequestStateChangedEvent " + event.toString());
         RequestEvent requestEvent = this.visualizationModel.add(event.requestId, event.state, event.ts);
         if (event.state) {
             this.successEvent.setValue(requestEvent);
-            return;
+        } else {
+            this.failedEvent.setValue(requestEvent);
         }
-        this.failedEvent.setValue(requestEvent);
+        int ratio = this.visualizationModel.getSuccessRatio();
+        this.ratio.setValue(ratio);
     }
 }

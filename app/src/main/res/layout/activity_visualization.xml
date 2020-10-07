@@ -32,12 +32,22 @@
                 android:onClick="@{() -> viewModel.onInvalidClicked()}"
                 android:id="@+id/sendInvalidButton"/>
         </LinearLayout>
+        <com.orensharon.brainq.presentation.view.RatioTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:padding="16dp"
+            app:ratio="@{viewModel.getRatio()}"/>
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/group"
             android:orientation="horizontal"
             android:gravity="center"
+            android:visibility="gone"
             app:timeScale="@={viewModel.getTimeScale()}">
             <RadioButton
                 android:layout_height="wrap_content"

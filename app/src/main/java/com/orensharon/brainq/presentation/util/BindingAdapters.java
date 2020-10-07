@@ -8,8 +8,14 @@ import androidx.databinding.InverseBindingListener;
 
 import com.orensharon.BrainQ;
 import com.orensharon.brainq.R;
+import com.orensharon.brainq.presentation.view.RatioTextView;
 
 public class BindingAdapters {
+
+    @BindingAdapter("ratio")
+    public static void setTimeScale(RatioTextView textView, Integer ratio){
+        textView.setRatio(ratio);
+    }
 
     @BindingAdapter("timeScale")
     public static void setTimeScale(RadioGroup radioGroup, Integer timeScale){

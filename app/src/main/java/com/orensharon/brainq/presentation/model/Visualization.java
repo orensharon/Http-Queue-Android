@@ -19,4 +19,13 @@ public class Visualization {
         list.add(event);
         return event;
     }
+
+    public int getSuccessRatio() {
+        int successes =  this.successEvents.size();
+        int fails =  this.failedEvents.size();
+        if (successes == 0 && fails == 0) {
+            return -1;
+        }
+        return (int)(100 * ((double)successes / (successes + fails)));
+    }
 }
