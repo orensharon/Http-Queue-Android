@@ -6,15 +6,14 @@ import java.io.Serializable;
 
 public class Request implements Serializable {
 
-    private final int id;
+    private long id;
     private final String endpoint;
     private final String jsonPayload;
     private int retries;
     private long lastRetryMs;
     private int method;
 
-    public Request(int id, String endpoint, String jsonPayload, int method) {
-        this.id = id;
+    public Request(String endpoint, String jsonPayload, int method) {
         this.endpoint = endpoint;
         this.jsonPayload = jsonPayload;
         this.method = method;
@@ -31,8 +30,12 @@ public class Request implements Serializable {
         this.lastRetryMs = request.lastRetryMs;
     }
 
-    public static Request put(int id, String endpoint, String jsonPayload) {
-        return new Request(id ,endpoint, jsonPayload, HTTPMethods.Method.PUT);
+    public static Request put(String endpoint, String jsonPayload) {
+        return new Request(endpoint, jsonPayload, HTTPMethods.Method.PUT);
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void updateState(boolean state, long ts) {
@@ -63,12 +66,16 @@ public class Request implements Serializable {
         return jsonPayload;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
     public int getReties() {
         return this.retries;
+    }
+
+    public long getLastRetryMs() {
+        return lastRetryMs;
     }
 
     private void failed(long ts) {

@@ -12,7 +12,7 @@ public class Visualization {
         this.failedEvents = new ArrayList<>();
     }
 
-    public RequestEvent add(int requestId, boolean state, long ts) {
+    public RequestEvent add(long requestId, boolean state, long ts) {
         List<RequestEvent> list = state? this.successEvents: this.failedEvents;
         long eventNumber = list.size() + 1;
         RequestEvent event = new RequestEvent(requestId, state, ts, eventNumber);

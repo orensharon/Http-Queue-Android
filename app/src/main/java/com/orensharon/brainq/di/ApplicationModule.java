@@ -3,10 +3,14 @@ package com.orensharon.brainq.di;
 import android.content.Context;
 
 
+import androidx.room.Room;
+
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.orensharon.brainq.App;
 import com.orensharon.brainq.data.RequestRepository;
+import com.orensharon.brainq.data.room.RequestDAO;
+import com.orensharon.brainq.data.room.RequestDatabase;
 import com.orensharon.brainq.presentation.vm.VisualizationViewModelFactory;
 import com.orensharon.brainq.service.QueueManager;
 import com.orensharon.brainq.service.RequestDispatcher;
@@ -29,8 +33,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    RequestRepository provideRequestRepository() {
-        return new RequestRepository();
+    RequestRepository provideRequestRepository(RequestDAO dao) {
+        return new RequestRepository(dao);
     }
 
     @Singleton
@@ -69,5 +73,17 @@ public class ApplicationModule {
     @Provides
     VisualizationViewModelFactory provideVisualizationViewModelFactory(EventBus eventBus) {
         return new VisualizationViewModelFactory(eventBus);
+    }
+
+    @Provides
+    @Singleton
+    RequestDatabase provideRequestDatabase(Context context) {
+        return Room.databaseBuilder(context, RequestDatabase.class, "request_db").build();
+    }
+
+    @Singleton
+    @Provides
+    RequestDAO provideRequestDAO(RequestDatabase database) {
+        return database.getRequestDAO();
     }
 }

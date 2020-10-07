@@ -22,7 +22,7 @@ public class QueueManager {
     }
 
 
-    public void enqueue(int requestId, long scheduledTs, Runnable runnable) {
+    public void enqueue(long requestId, long scheduledTs, Runnable runnable) {
         this.requests.add(new QueuedRequest(requestId, scheduledTs, runnable));
     }
 
@@ -71,10 +71,10 @@ public class QueueManager {
 
     static class QueuedRequest {
         long ts;
-        int requestId;
+        long requestId;
         Runnable runnable;
 
-        public QueuedRequest(int requestId, long scheduledTs, Runnable runnable) {
+        public QueuedRequest(long requestId, long scheduledTs, Runnable runnable) {
             this.ts = scheduledTs;
             this.requestId = requestId;
             this.runnable = runnable;

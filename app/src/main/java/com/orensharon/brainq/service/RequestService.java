@@ -31,7 +31,7 @@ public class RequestService {
     }
 
     public void add(Request request) {
-        this.repository.add(request);
+        this.repository.store(request);
         this.addToQueue(request);
     }
 
@@ -49,7 +49,7 @@ public class RequestService {
         this.queueManager.enqueue(request.getId(), request.getScheduledTime(), dequeueListener);
     }
 
-    private void onRequestReady(int requestId) {
+    private void onRequestReady(long requestId) {
         Log.i(TAG, "onRequestReady requestId=" + requestId);
         Request request = this.repository.getById(requestId);
         int method = request.getMethod();
@@ -59,12 +59,12 @@ public class RequestService {
         this.dispatcher.dispatch(method, url, payload, dispatchedCallback);
     }
 
-    private void onDispatcherResponse(int requestId, boolean state) {
+    private void onDispatcherResponse(long requestId, boolean state) {
         Log.i(TAG, "onDispatcherResponse - requestId:" + requestId + " state: " + state);
         long ts = SystemClock.elapsedRealtime();
         Request request = this.repository.getById(requestId);
         request.updateState(state, ts);
-        this.repository.save(request);
+        this.repository.store(request);
         long rtc = System.currentTimeMillis();
         this.eventBus.post(new RequestStateChangedEvent(requestId, rtc, state));
         if (state) {
