@@ -1,4 +1,4 @@
-package com.orensharon.brainq.util;
+package com.orensharon.brainq.presentation.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;

@@ -10,7 +10,7 @@ import com.orensharon.BrainQ;
 import com.orensharon.brainq.data.event.RequestStateChangedEvent;
 import com.orensharon.brainq.presentation.model.RequestEvent;
 import com.orensharon.brainq.presentation.model.Visualization;
-import com.orensharon.brainq.util.SingleLiveEvent;
+import com.orensharon.brainq.presentation.util.SingleLiveEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

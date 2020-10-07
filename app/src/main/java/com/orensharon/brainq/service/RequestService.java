@@ -4,7 +4,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.orensharon.BrainQ;
-import com.orensharon.brainq.data.Request;
+import com.orensharon.brainq.data.model.Request;
 import com.orensharon.brainq.data.RequestRepository;
 import com.orensharon.brainq.data.event.RequestStateChangedEvent;
 

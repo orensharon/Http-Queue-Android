@@ -16,14 +16,13 @@ import com.orensharon.BrainQ;
 import com.orensharon.brainq.App;
 import com.orensharon.brainq.R;
 import com.orensharon.brainq.databinding.ActivityVisualizationBinding;
-import com.orensharon.brainq.mock.Mock;
 import com.orensharon.brainq.mock.Util;
 import com.orensharon.brainq.presentation.model.RequestEvent;
 import com.orensharon.brainq.presentation.vm.VisualizationVM;
 import com.orensharon.brainq.presentation.vm.VisualizationViewModelFactory;
 import com.orensharon.brainq.service.HTTPMethods;
 import com.orensharon.brainq.service.HttpQueueIntentService;
-import com.orensharon.brainq.util.DateUtil;
+import com.orensharon.brainq.presentation.util.DateUtil;
 
 import java.util.Calendar;
 import java.util.Date;

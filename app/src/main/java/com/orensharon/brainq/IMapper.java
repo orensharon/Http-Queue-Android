@@ -1,4 +1,4 @@
-package com.orensharon.brainq.data.mapper;
+package com.orensharon.brainq;
 
 public interface IMapper<F, T> {
     T map(F from);

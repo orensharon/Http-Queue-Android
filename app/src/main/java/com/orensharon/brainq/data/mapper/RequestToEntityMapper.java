@@ -1,6 +1,7 @@
 package com.orensharon.brainq.data.mapper;
 
-import com.orensharon.brainq.data.Request;
+import com.orensharon.brainq.IMapper;
+import com.orensharon.brainq.data.model.Request;
 import com.orensharon.brainq.data.room.RequestEntity;
 
 import java.util.Date;

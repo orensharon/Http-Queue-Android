@@ -2,6 +2,7 @@ package com.orensharon.brainq.data;
 
 import com.orensharon.brainq.data.mapper.EntityToRequestMapper;
 import com.orensharon.brainq.data.mapper.RequestToEntityMapper;
+import com.orensharon.brainq.data.model.Request;
 import com.orensharon.brainq.data.room.RequestDAO;
 import com.orensharon.brainq.data.room.RequestEntity;
 

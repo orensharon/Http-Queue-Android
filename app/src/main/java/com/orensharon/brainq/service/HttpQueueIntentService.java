@@ -10,8 +10,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.orensharon.brainq.App;
-import com.orensharon.brainq.data.Request;
-import com.orensharon.brainq.util.IDGenerator;
+import com.orensharon.brainq.data.model.Request;
 
 import javax.inject.Inject;
 

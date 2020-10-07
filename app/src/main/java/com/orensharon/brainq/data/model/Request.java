@@ -1,4 +1,4 @@
-package com.orensharon.brainq.data;
+package com.orensharon.brainq.data.model;
 
 import com.orensharon.brainq.service.HTTPMethods;
 
