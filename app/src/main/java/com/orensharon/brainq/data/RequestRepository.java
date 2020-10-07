@@ -22,7 +22,7 @@ public class RequestRepository {
     }
 
     public void init() {
-        List<RequestEntity> entities = this.local.list();
+        List<RequestEntity> entities = this.local.listAllFails();
         for (RequestEntity entity : entities) {
             this.requests.put(entity.getId(), new EntityToRequestMapper().map(entity));
         }

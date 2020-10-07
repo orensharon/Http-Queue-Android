@@ -12,4 +12,7 @@ public abstract class RequestDAO extends BaseDao<RequestEntity> {
 
     @Query("SELECT * FROM RequestEntity")
     public abstract List<RequestEntity> list();
+
+    @Query("SELECT * FROM RequestEntity WHERE retries > 0")
+    public abstract List<RequestEntity> listAllFails();
 }
