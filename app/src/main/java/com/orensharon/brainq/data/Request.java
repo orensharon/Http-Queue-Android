@@ -21,6 +21,15 @@ public class Request implements Serializable {
         this.lastRetryMs = 0;
     }
 
+    public Request(long id, String endpoint, String jsonPayload, int method, int retries, long lastRetryMs) {
+        this.id = id;
+        this.endpoint = endpoint;
+        this.jsonPayload = jsonPayload;
+        this.method = method;
+        this.retries = retries;
+        this.lastRetryMs = lastRetryMs;
+    }
+
     public Request(Request request) {
         this.id = request.id;
         this.endpoint = request.endpoint;

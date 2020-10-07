@@ -10,6 +10,7 @@ import com.orensharon.brainq.data.event.RequestStateChangedEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 
 public class RequestService {
@@ -31,7 +32,14 @@ public class RequestService {
     }
 
     public void start() {
-        this.queueWorker.listen();
+        this.executor.execute(() -> {
+            this.repository.init();
+            this.queueWorker.listen();
+            List<Request> requests = this.repository.list();
+            for (Request request : requests) {
+                this.addToQueue(request);
+            }
+        });
     }
 
     public void add(Request request) {

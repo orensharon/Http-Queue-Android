@@ -53,4 +53,24 @@ public class RequestEntity {
     public long getId() {
         return id;
     }
+
+    public String getEndPoint() {
+        return endPoint;
+    }
+
+    public int getMethod() {
+        return method;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public int getRetries() {
+        return retries;
+    }
+
+    public long getTs() {
+        return ts.getTime();
+    }
 }

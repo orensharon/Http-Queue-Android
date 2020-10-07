@@ -11,6 +11,5 @@ import java.util.List;
 public abstract class RequestDAO extends BaseDao<RequestEntity> {
 
     @Query("SELECT * FROM RequestEntity")
-    abstract List<RequestEntity> getRequests();
-
+    public abstract List<RequestEntity> list();
 }
