@@ -8,16 +8,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
 
-public class QueueManager {
+public class QueueWorker {
 
-    private final static String TAG = QueueManager.class.getSimpleName();
+    private final static String TAG = QueueWorker.class.getSimpleName();
 
     private volatile boolean started;
 
     private ExecutorService executor;
     private final PriorityBlockingQueue<QueuedRequest> requests;
 
-    public QueueManager() {
+    public QueueWorker() {
         this.requests = new PriorityBlockingQueue<>(10, new QueueComparator());
     }
 

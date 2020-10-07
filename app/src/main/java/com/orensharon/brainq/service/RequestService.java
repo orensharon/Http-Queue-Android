@@ -17,21 +17,21 @@ public class RequestService {
     private final static String TAG = RequestService.class.getSimpleName();
 
     private final RequestRepository repository;
-    private final QueueManager queueManager;
+    private final QueueWorker queueWorker;
     private final RequestDispatcher dispatcher;
     private final EventBus eventBus;
     private final Executor executor;
 
-    public RequestService(RequestRepository repository, QueueManager queueManager, RequestDispatcher dispatcher, EventBus eventBus, Executor executor) {
+    public RequestService(RequestRepository repository, QueueWorker queueWorker, RequestDispatcher dispatcher, EventBus eventBus, Executor executor) {
         this.repository = repository;
-        this.queueManager = queueManager;
+        this.queueWorker = queueWorker;
         this.dispatcher = dispatcher;
         this.eventBus = eventBus;
         this.executor = executor;
     }
 
     public void start() {
-        this.queueManager.listen();
+        this.queueWorker.listen();
     }
 
     public void add(Request request) {
@@ -52,7 +52,7 @@ public class RequestService {
             return;
         }
         Runnable dequeueListener = () -> this.onRequestReady(request.getId());
-        this.queueManager.enqueue(request.getId(), request.getScheduledTime(), dequeueListener);
+        this.queueWorker.enqueue(request.getId(), request.getScheduledTime(), dequeueListener);
     }
 
     private void onRequestReady(long requestId) {

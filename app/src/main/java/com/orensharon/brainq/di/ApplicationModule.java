@@ -12,7 +12,7 @@ import com.orensharon.brainq.data.RequestRepository;
 import com.orensharon.brainq.data.room.RequestDAO;
 import com.orensharon.brainq.data.room.RequestDatabase;
 import com.orensharon.brainq.presentation.vm.VisualizationViewModelFactory;
-import com.orensharon.brainq.service.QueueManager;
+import com.orensharon.brainq.service.QueueWorker;
 import com.orensharon.brainq.service.RequestDispatcher;
 import com.orensharon.brainq.service.RequestService;
 
@@ -47,8 +47,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    RequestService provideRequestService(RequestRepository repository, RequestDispatcher dispatcher, QueueManager queueManager, EventBus eventBus, Executor executor) {
-        return new RequestService(repository, queueManager, dispatcher, eventBus, executor);
+    RequestService provideRequestService(RequestRepository repository, RequestDispatcher dispatcher, QueueWorker queueWorker, EventBus eventBus, Executor executor) {
+        return new RequestService(repository, queueWorker, dispatcher, eventBus, executor);
     }
 
     @Singleton
@@ -65,8 +65,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    QueueManager provideQueueManager() {
-        return new QueueManager();
+    QueueWorker provideQueueWorker() {
+        return new QueueWorker();
     }
 
     @Singleton
