@@ -86,6 +86,7 @@ public class VisualizationActivity extends AppCompatActivity {
         this.graphView.getViewport().setXAxisBoundsManual(true);
 
         this.initObservers();
+        this.viewModel.init();
         //Mock.startSendMock(this.getApplicationContext());
     }
 

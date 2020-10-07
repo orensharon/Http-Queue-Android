@@ -36,13 +36,7 @@ public class QueueManager {
         this.executor.execute(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    long ts = SystemClock.elapsedRealtime();
-                    QueuedRequest request = this.requests.take();
-                    if (!request.isReady(ts)) {
-                        this.requests.add(request);
-                    } else {
-                        request.runnable.run();
-                    }
+                    this.mainJob();
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -52,6 +46,16 @@ public class QueueManager {
             Log.i(TAG, "No longer listing");
             this.terminate();
         });
+    }
+
+    private void mainJob() throws InterruptedException {
+        QueuedRequest request = this.requests.take();
+        long ts = SystemClock.elapsedRealtime();
+        if (!request.isReady(ts)) {
+            this.requests.add(request);
+            return;
+        }
+        request.runnable.run();
     }
 
     public void terminate() {

@@ -25,8 +25,8 @@ public class VisualizationVM extends ViewModel {
     private final MutableLiveData<Integer> timeScale;
     private final SingleLiveEvent<Boolean> validClick;
     private final SingleLiveEvent<Boolean> invalidClick;
-    private final MutableLiveData<RequestEvent> successEvent;
-    private final MutableLiveData<RequestEvent> failedEvent;
+    private final SingleLiveEvent<RequestEvent> successEvent;
+    private final SingleLiveEvent<RequestEvent> failedEvent;
 
     private final EventBus eventBus;
 
@@ -36,10 +36,15 @@ public class VisualizationVM extends ViewModel {
         this.timeScale = new MutableLiveData<>();
         this.validClick = new SingleLiveEvent<>();
         this.invalidClick = new SingleLiveEvent<>();
-        this.successEvent = new MutableLiveData<>();
-        this.failedEvent = new MutableLiveData<>();
+        this.successEvent = new SingleLiveEvent<>();
+        this.failedEvent = new SingleLiveEvent<>();
         this.timeScale.setValue(BrainQ.TimeScale.HOURLY);
-        this.eventBus.register(this);
+    }
+
+    public void init() {
+        if (!this.eventBus.isRegistered(this)) {
+            this.eventBus.register(this);
+        }
     }
 
     @Override

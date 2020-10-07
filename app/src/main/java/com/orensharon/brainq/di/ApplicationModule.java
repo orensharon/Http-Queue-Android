@@ -18,6 +18,9 @@ import com.orensharon.brainq.service.RequestService;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -31,6 +34,11 @@ public class ApplicationModule {
         return application.getApplicationContext();
     }
 
+    @Provides
+    Executor provideExecutor() {
+        return Executors.newSingleThreadExecutor();
+    }
+
     @Singleton
     @Provides
     RequestRepository provideRequestRepository(RequestDAO dao) {
@@ -39,8 +47,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    RequestService provideRequestService(RequestRepository repository, RequestDispatcher dispatcher, QueueManager queueManager, EventBus eventBus) {
-        return new RequestService(repository, queueManager, dispatcher, eventBus);
+    RequestService provideRequestService(RequestRepository repository, RequestDispatcher dispatcher, QueueManager queueManager, EventBus eventBus, Executor executor) {
+        return new RequestService(repository, queueManager, dispatcher, eventBus, executor);
     }
 
     @Singleton
