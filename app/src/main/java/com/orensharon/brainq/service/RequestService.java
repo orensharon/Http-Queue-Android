@@ -63,6 +63,7 @@ public class RequestService {
         this.queueWorker.enqueue(request.getId(), request.getScheduledTime(), dequeueListener);
     }
 
+    // Callback fired after request dequeue
     private void onRequestReady(long requestId) {
         this.executor.execute(() -> {
             Log.i(TAG, "onRequestReady requestId=" + requestId);
@@ -75,6 +76,7 @@ public class RequestService {
         });
     }
 
+    //Callback fired after receiving response
     private void onDispatcherResponse(long requestId, boolean state) {
         this.executor.execute(() -> {
             Log.i(TAG, "onDispatcherResponse - requestId:" + requestId + " state: " + state);

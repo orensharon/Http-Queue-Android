@@ -10,8 +10,6 @@ public class Visualization {
 
     private final GraphTime graphTime;
 
-    // TODO: get success ratio by time
-
     public Visualization(int timeScale) {
         this.successEvents = new ArrayList<>();
         this.failedEvents = new ArrayList<>();

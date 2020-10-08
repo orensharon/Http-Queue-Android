@@ -13,7 +13,7 @@ public interface IVisualizationVM {
     LiveData<Boolean> getInvalidClick();
     LiveData<RequestEvent> getLastSuccessEvent();
     LiveData<RequestEvent> getLastFailedEvent();
-    // TODO:
+    // TODO: using getter this way is good practice?
     long getStartTime();
     long getEndTime();
     List<RequestEvent> getAllSuccessEvents();
