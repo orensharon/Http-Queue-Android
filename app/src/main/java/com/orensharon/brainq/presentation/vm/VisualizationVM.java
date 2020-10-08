@@ -98,17 +98,18 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
 
     @Override
     public List<RequestEvent> getAllSuccessEvents() {
-        return this.visualization.getAllSuccessEvents();
+        return this.visualization.getAllSuccessEventsImmutable();
     }
 
     @Override
     public List<RequestEvent> getAllFailedEvents() {
-        return this.visualization.getAllFailedEvents();
+        return this.visualization.getAllFailedEventsImmutable();
     }
 
     public void changeTimeScale(int timeScale) {
         this.visualization.changeTimeScale(timeScale);
         this.timeScale.setValue(this.visualization.getTimeScale());
+        this.ratio.setValue(this.visualization.getSuccessRatio());
     }
 
     public void onValidClicked() {

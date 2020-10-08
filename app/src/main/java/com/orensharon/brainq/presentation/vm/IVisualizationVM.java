@@ -18,4 +18,5 @@ public interface IVisualizationVM {
     long getEndTime();
     List<RequestEvent> getAllSuccessEvents();
     List<RequestEvent> getAllFailedEvents();
+    // ***
 }

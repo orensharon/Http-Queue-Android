@@ -31,12 +31,22 @@ public class Visualization {
     }
 
     public int getSuccessRatio() {
-        int successes =  this.successEvents.size();
-        int fails =  this.failedEvents.size();
+        int successes = this.getEventFilteredByTime(this.successEvents);
+        int fails =  this.getEventFilteredByTime(this.failedEvents);
         if (successes == 0 && fails == 0) {
             return -1;
         }
         return (int)(100 * ((double)successes / (successes + fails)));
+    }
+
+    private int getEventFilteredByTime(List<RequestEvent> events) {
+        int counter = 0;
+        for (RequestEvent event : events) {
+            if (event.ts >= this.graphTime.getStart() && event.ts <= this.graphTime.getEnd()) {
+                counter++;
+            }
+        }
+        return counter;
     }
 
     public long getEndTime() {
@@ -51,11 +61,11 @@ public class Visualization {
         return this.graphTime.getTimeScale();
     }
 
-    public List<RequestEvent> getAllFailedEvents() {
+    public List<RequestEvent> getAllFailedEventsImmutable() {
         return this.geEvents(this.failedEvents);
     }
 
-    public List<RequestEvent> getAllSuccessEvents() {
+    public List<RequestEvent> getAllSuccessEventsImmutable() {
         return this.geEvents(this.successEvents);
     }
 
