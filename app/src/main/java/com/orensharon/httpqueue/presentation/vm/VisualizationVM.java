@@ -25,7 +25,7 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
     private Visualization visualization;
 
     private final MutableLiveData<Integer> timeScale;
-    private final MutableLiveData<Integer> ratio;
+    private final MutableLiveData<Integer> successPercentage;
     private final SingleLiveEvent<Boolean> validClick;
     private final SingleLiveEvent<Boolean> invalidClick;
     private final SingleLiveEvent<RequestEvent> successEvent;
@@ -37,14 +37,14 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
         this.eventBus = eventBus;
         this.visualization = new Visualization(TimeScale.MINUTELY);
         this.timeScale = new MutableLiveData<>();
-        this.ratio = new MutableLiveData<>();
+        this.successPercentage = new MutableLiveData<>();
         this.validClick = new SingleLiveEvent<>();
         this.invalidClick = new SingleLiveEvent<>();
         this.successEvent = new SingleLiveEvent<>();
         this.failedEvent = new SingleLiveEvent<>();
         // TODO: here?
         this.timeScale.setValue(this.visualization.getTimeScale());
-        this.ratio.setValue(this.visualization.getSuccessRatio());
+        this.successPercentage.setValue(this.visualization.getSuccessPercentage());
     }
 
     @Override
@@ -109,7 +109,7 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
     public void changeTimeScale(int timeScale) {
         this.visualization.changeTimeScale(timeScale);
         this.timeScale.setValue(this.visualization.getTimeScale());
-        this.ratio.setValue(this.visualization.getSuccessRatio());
+        this.successPercentage.setValue(this.visualization.getSuccessPercentage());
     }
 
     public void onValidClicked() {
@@ -120,8 +120,8 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
         this.invalidClick.setValue(true);
     }
 
-    public LiveData<Integer> getRatio() {
-        return ratio;
+    public LiveData<Integer> getSuccessPercentage() {
+        return successPercentage;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -133,7 +133,7 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
         } else {
             this.failedEvent.setValue(requestEvent);
         }
-        int ratio = this.visualization.getSuccessRatio();
-        this.ratio.setValue(ratio);
+        int percentage = this.visualization.getSuccessPercentage();
+        this.successPercentage.setValue(percentage);
     }
 }

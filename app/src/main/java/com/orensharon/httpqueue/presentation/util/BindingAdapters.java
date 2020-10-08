@@ -9,13 +9,13 @@ import androidx.databinding.InverseBindingListener;
 
 import com.orensharon.httpqueue.R;
 import com.orensharon.httpqueue.presentation.TimeScale;
-import com.orensharon.httpqueue.presentation.view.RatioTextView;
+import com.orensharon.httpqueue.presentation.view.PercentageTextView;
 
 public class BindingAdapters {
 
-    @BindingAdapter("ratio")
-    public static void setTimeScale(RatioTextView textView, Integer ratio){
-        textView.setRatio(ratio);
+    @BindingAdapter("percentage")
+    public static void setPercentage(PercentageTextView textView, Integer percentage){
+        textView.setPercentage(percentage);
     }
 
     @BindingAdapter("timeScale")

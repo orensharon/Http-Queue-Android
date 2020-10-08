@@ -67,7 +67,7 @@
                 app:onChecked="@{() -> viewModel.changeTimeScale(TimeScale.WEEKLY)}"
                 android:text="Week"/>
         </RadioGroup>
-        <com.orensharon.httpqueue.presentation.view.RatioTextView
+        <com.orensharon.httpqueue.presentation.view.PercentageTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -75,7 +75,7 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:padding="16dp"
-            app:ratio="@{viewModel.getRatio()}"/>
+            app:percentage="@{viewModel.getSuccessPercentage()}"/>
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -28,7 +28,7 @@ public class Visualization {
         this.graphTime.setTimeScale(timeScale);
     }
 
-    public int getSuccessRatio() {
+    public int getSuccessPercentage() {
         int successes = this.getEventFilteredByTime(this.successEvents);
         int fails =  this.getEventFilteredByTime(this.failedEvents);
         if (successes == 0 && fails == 0) {
