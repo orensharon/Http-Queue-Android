@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="com.orensharon.BrainQ.TimeScale"/>
         <variable
             name="viewModel"
             type="com.orensharon.brainq.presentation.vm.VisualizationVM" />
@@ -47,23 +48,26 @@
             android:id="@+id/group"
             android:orientation="horizontal"
             android:gravity="center"
-            app:timeScale="@={viewModel.getTimeScale()}">
+            app:timeScale="@{viewModel.getTimeScale()}">
             <RadioButton
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:id="@+id/hour"
+                app:onCheck="@{() -> viewModel.changeTimeScale(TimeScale.HOURLY)}"
                 android:text="Hour"/>
 
             <RadioButton
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:id="@+id/day"
+                app:onCheck="@{() -> viewModel.changeTimeScale(TimeScale.DAILY)}"
                 android:text="Day"/>
 
             <RadioButton
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:id="@+id/week"
+                app:onCheck="@{() -> viewModel.changeTimeScale(TimeScale.WEEKLY)}"
                 android:text="Week"/>
         </RadioGroup>
         <FrameLayout

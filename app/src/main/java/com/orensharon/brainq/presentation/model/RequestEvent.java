@@ -12,4 +12,14 @@ public class RequestEvent {
         this.ts = ts;
         this.number = number;
     }
+
+    @Override
+    public String toString() {
+        return "RequestEvent{" +
+                "requestId=" + requestId +
+                ", state=" + state +
+                ", ts=" + ts +
+                ", number=" + number +
+                '}';
+    }
 }

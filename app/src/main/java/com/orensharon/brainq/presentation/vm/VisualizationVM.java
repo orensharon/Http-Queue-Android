@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.orensharon.BrainQ;
 import com.orensharon.brainq.data.event.RequestStateChangedEvent;
+import com.orensharon.brainq.presentation.model.GraphTime;
 import com.orensharon.brainq.presentation.model.RequestEvent;
 import com.orensharon.brainq.presentation.model.Visualization;
 import com.orensharon.brainq.presentation.util.SingleLiveEvent;
@@ -22,7 +23,7 @@ public class VisualizationVM extends ViewModel {
 
     private Visualization visualizationModel;
 
-    private final MutableLiveData<Integer> timeScale;
+    private final MutableLiveData<GraphTime> graphTime;
     private final MutableLiveData<Integer> ratio;
     private final SingleLiveEvent<Boolean> validClick;
     private final SingleLiveEvent<Boolean> invalidClick;
@@ -33,14 +34,15 @@ public class VisualizationVM extends ViewModel {
 
     public VisualizationVM(EventBus eventBus) {
         this.eventBus = eventBus;
-        this.visualizationModel = new Visualization();
-        this.timeScale = new MutableLiveData<>();
+        this.visualizationModel = new Visualization(BrainQ.TimeScale.HOURLY);
+        this.graphTime = new MutableLiveData<>();
         this.ratio = new MutableLiveData<>();
         this.validClick = new SingleLiveEvent<>();
         this.invalidClick = new SingleLiveEvent<>();
         this.successEvent = new SingleLiveEvent<>();
         this.failedEvent = new SingleLiveEvent<>();
-        this.timeScale.setValue(BrainQ.TimeScale.HOURLY);
+        // TODO: ilan - here?
+        this.graphTime.setValue(this.visualizationModel.getGraphTime());
         this.ratio.setValue(this.visualizationModel.getSuccessRatio());
     }
 
@@ -57,8 +59,13 @@ public class VisualizationVM extends ViewModel {
         this.eventBus.unregister(this);
     }
 
-    public MutableLiveData<Integer> getTimeScale() {
-        return this.timeScale;
+    public void changeTimeScale(int timeScale) {
+        this.visualizationModel.changeTimeScale(timeScale);
+        this.graphTime.setValue(this.visualizationModel.getGraphTime());
+    }
+
+    public LiveData<GraphTime> getGraphTime() {
+        return this.graphTime;
     }
 
     public LiveData<Boolean> getValidClick() {
@@ -87,6 +94,14 @@ public class VisualizationVM extends ViewModel {
 
     public LiveData<Integer> getRatio() {
         return ratio;
+    }
+
+    public int getTimeScale() {
+        return this.visualizationModel.getGraphTime().getTimeScale();
+    }
+
+    public long getStart() {
+        return this.visualizationModel.getGraphTime().getStart();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

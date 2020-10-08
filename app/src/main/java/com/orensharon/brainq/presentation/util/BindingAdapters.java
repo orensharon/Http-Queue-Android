@@ -1,5 +1,6 @@
 package com.orensharon.brainq.presentation.util;
 
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.databinding.BindingAdapter;
@@ -54,5 +55,15 @@ public class BindingAdapters {
     @BindingAdapter("timeScaleAttrChanged")
     public static void setListener(RadioGroup radioGroup, final InverseBindingListener listener) {
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> listener.onChange());
+    }
+
+    @BindingAdapter("onCheck")
+    public static void setListener(RadioButton radioButton, final InverseBindingListener listener) {
+        radioButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!isChecked) {
+                return;
+            }
+            listener.onChange();
+        });
     }
 }

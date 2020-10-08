@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -20,6 +21,7 @@ import com.orensharon.brainq.App;
 import com.orensharon.brainq.R;
 import com.orensharon.brainq.databinding.ActivityVisualizationBinding;
 import com.orensharon.brainq.mock.Util;
+import com.orensharon.brainq.presentation.model.GraphTime;
 import com.orensharon.brainq.presentation.model.RequestEvent;
 import com.orensharon.brainq.presentation.vm.VisualizationVM;
 import com.orensharon.brainq.presentation.vm.VisualizationViewModelFactory;
@@ -27,7 +29,6 @@ import com.orensharon.brainq.service.HTTPMethods;
 import com.orensharon.brainq.service.HttpQueueIntentService;
 import com.orensharon.brainq.presentation.util.DateUtil;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -44,8 +45,6 @@ public class VisualizationActivity extends AppCompatActivity {
     private ActivityVisualizationBinding binding;
     private VisualizationVM viewModel;
 
-    private long start;
-
     @Inject
     VisualizationViewModelFactory visualizationViewModelFactory;
 
@@ -59,25 +58,9 @@ public class VisualizationActivity extends AppCompatActivity {
         this.binding.setLifecycleOwner(this);
         this.binding.setViewModel(this.viewModel);
 
-        // Init x axis label formatter
-        this.hourlyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getHourlyDateInFormat());
-        this.dailyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getDailyDateInFormat());
-        this.weeklyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getWeeklyDateInFormat());
-
-        Calendar calendar = Calendar.getInstance();
-        this.start = calendar.getTimeInMillis();
-
-        this.successSeries = new LineGraphSeries<>(new DataPoint[]{
-                new DataPoint(new Date(this.start), 0)
-        });
-        this.failedSeries = new LineGraphSeries<>(new DataPoint[]{
-                new DataPoint(new Date(this.start), 0)
-        });
-        this.successSeries.setColor(Color.GREEN);
-        this.failedSeries.setColor(Color.RED);
-
         this.initObservers();
         this.viewModel.init();
+        this.initGraphComponents();
         //Mock.startSendMock(this.getApplicationContext());
     }
 
@@ -86,7 +69,7 @@ public class VisualizationActivity extends AppCompatActivity {
         this.viewModel.getInvalidClick().observe(this, b -> this.sendInvalid());
         this.viewModel.getLastSuccessEvent().observe(this, this::appendSuccessEvent);
         this.viewModel.getLastFailedEvent().observe(this, this::appendFailedEvent);
-        this.viewModel.getTimeScale().observe(this, this::applyTimeScale);
+        this.viewModel.getGraphTime().observe(this, this::applyTimeScale);
     }
 
     private void appendSuccessEvent(RequestEvent event) {
@@ -98,6 +81,7 @@ public class VisualizationActivity extends AppCompatActivity {
     }
 
     private void appendNewEvent(LineGraphSeries<DataPoint> series, RequestEvent event) {
+        Log.i(TAG, "appendNewEvent:" + event.toString());
         series.appendData(new DataPoint(new Date(event.ts), event.number), false, 1000);
     }
 
@@ -117,38 +101,25 @@ public class VisualizationActivity extends AppCompatActivity {
         this.startService(i);
     }
 
-    private void applyTimeScale(int  timeScale) {
+    private void applyTimeScale(GraphTime graphTime) {
+        LabelFormatter labelFormatter = this.getLabelFormatter(graphTime.getTimeScale());
+        this.createGraphView(graphTime.getStart(), graphTime.getEnd(), labelFormatter);
+    }
+
+    private LabelFormatter getLabelFormatter(int timeScale) {
+        LabelFormatter labelFormatter = null;
         switch (timeScale) {
             case BrainQ.TimeScale.HOURLY:
-                this.applyHourly();
+                labelFormatter = this.hourlyFormat;
                 break;
             case BrainQ.TimeScale.DAILY:
-                this.applyDaily();
+                labelFormatter = this.dailyFormat;
                 break;
             case BrainQ.TimeScale.WEEKLY:
-                this.applyWeekly();
+                labelFormatter = this.weeklyFormat;
                 break;
         }
-    }
-
-    // TODO START/END MOVE TO VM
-    private void applyHourly() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR_OF_DAY, 1);
-        this.createGraphView(this.start, calendar.getTimeInMillis(), this.hourlyFormat);
-    }
-
-    private void applyDaily() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        this.createGraphView(this.start, calendar.getTimeInMillis(), this.dailyFormat);
-    }
-
-    private void applyWeekly() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.WEEK_OF_YEAR, 1);
-        this.createGraphView(this.start, calendar.getTimeInMillis(), this.weeklyFormat);
+        return labelFormatter;
     }
 
     private void createGraphView(long start, long end, LabelFormatter labelFormatter) {
@@ -159,10 +130,27 @@ public class VisualizationActivity extends AppCompatActivity {
         graphView.addSeries(this.failedSeries);
         graphView.getViewport().setMinX(start);
         graphView.getViewport().setMaxX(end);
-        graphView.getGridLabelRenderer().setNumHorizontalLabels(3);
-        graphView.getGridLabelRenderer().setHumanRounding(false);
-        graphView.getGridLabelRenderer().setLabelFormatter(labelFormatter);
         graphView.getViewport().setXAxisBoundsManual(true);
-        binding.graphContainer.addView(graphView);
+        graphView.getGridLabelRenderer().setHumanRounding(false);
+        //graphView.getGridLabelRenderer().setNumHorizontalLabels(5);
+        graphView.getGridLabelRenderer().setLabelFormatter(labelFormatter);
+        this.binding.graphContainer.addView(graphView);
+    }
+
+    private void initGraphComponents() {
+        // Init x axis label formatter
+        this.hourlyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getHourlyDateInFormat());
+        this.dailyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getDailyDateInFormat());
+        this.weeklyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getWeeklyDateInFormat());
+
+        // Series
+        this.successSeries = new LineGraphSeries<>(new DataPoint[]{
+                new DataPoint(this.viewModel.getStart(), 0)
+        });
+        this.failedSeries = new LineGraphSeries<>(new DataPoint[]{
+                new DataPoint(this.viewModel.getStart(), 0)
+        });
+        this.successSeries.setColor(Color.GREEN);
+        this.failedSeries.setColor(Color.RED);
     }
 }
