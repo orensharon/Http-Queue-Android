@@ -13,6 +13,13 @@ public class RequestEvent {
         this.number = number;
     }
 
+    public RequestEvent(RequestEvent requestEvent) {
+        this.requestId = requestEvent.requestId;
+        this.state = requestEvent.state;
+        this.ts = requestEvent.ts;
+        this.number = requestEvent.number;
+    }
+
     @Override
     public String toString() {
         return "RequestEvent{" +

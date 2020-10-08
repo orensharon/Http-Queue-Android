@@ -17,6 +17,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.List;
+
 public class VisualizationVM extends ViewModel implements IVisualizationVM {
 
     private final static String TAG = VisualizationVM.class.getSimpleName();
@@ -88,6 +90,16 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
     @Override
     public long getStart() {
         return this.visualizationModel.getGraphTime().getStart();
+    }
+
+    @Override
+    public List<RequestEvent> getAllSuccessEvents() {
+        return this.visualizationModel.getAllSuccessEvents();
+    }
+
+    @Override
+    public List<RequestEvent> getAllFailedEvents() {
+        return this.visualizationModel.getAllFailedEvents();
     }
 
     public void changeTimeScale(int timeScale) {

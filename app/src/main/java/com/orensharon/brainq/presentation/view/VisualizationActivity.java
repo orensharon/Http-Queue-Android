@@ -31,9 +31,9 @@ import com.orensharon.brainq.service.HttpQueueIntentService;
 import com.orensharon.brainq.presentation.util.DateUtil;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
-
 
 public class VisualizationActivity extends AppCompatActivity {
 
@@ -118,6 +118,7 @@ public class VisualizationActivity extends AppCompatActivity {
         graphView.getViewport().setXAxisBoundsManual(true);
         graphView.getGridLabelRenderer().setHumanRounding(false);
         graphView.getGridLabelRenderer().setNumHorizontalLabels(5);
+        graphView.getGridLabelRenderer().setNumVerticalLabels(5);
         graphView.getGridLabelRenderer().setLabelFormatter(labelFormatter);
         this.binding.graphContainer.addView(graphView);
     }
@@ -127,11 +128,9 @@ public class VisualizationActivity extends AppCompatActivity {
         this.hourlyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getHourlyDateInFormat());
         this.dailyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getDailyDateInFormat());
         this.weeklyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getWeeklyDateInFormat());
-
         // Series
-        long x = this.viewModel.getStart();
-        this.successSeries = new LineGraphSeries<>(new DataPoint[]{new DataPoint(x, 0)});
-        this.failedSeries = new LineGraphSeries<>(new DataPoint[]{new DataPoint(x, 0)});
+        this.successSeries = this.initSeries(this.viewModel.getAllSuccessEvents());
+        this.failedSeries = this.initSeries(this.viewModel.getAllFailedEvents());
         this.successSeries.setColor(Color.GREEN);
         this.failedSeries.setColor(Color.RED);
     }
@@ -150,6 +149,17 @@ public class VisualizationActivity extends AppCompatActivity {
                 break;
         }
         return labelFormatter;
+    }
+
+    private LineGraphSeries<DataPoint> initSeries(List<RequestEvent> events) {
+        long x = this.viewModel.getStart();
+        DataPoint[] dataPoints = new DataPoint[events.size() + 1];
+        dataPoints[0] = new DataPoint(x, 0);
+        for (int i = 0; i < dataPoints.length - 1; i++) {
+            RequestEvent event = events.get(i);
+            dataPoints[i + 1] = new DataPoint(event.ts, event.number);
+        }
+        return new LineGraphSeries<>(dataPoints);
     }
 
 }

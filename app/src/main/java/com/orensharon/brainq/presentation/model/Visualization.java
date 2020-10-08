@@ -42,4 +42,20 @@ public class Visualization {
     public GraphTime getGraphTime() {
         return new GraphTime(this.graphTime);
     }
+
+    public List<RequestEvent> getAllFailedEvents() {
+        return this.geEvents(this.failedEvents);
+    }
+
+    public List<RequestEvent> getAllSuccessEvents() {
+        return this.geEvents(this.successEvents);
+    }
+
+    private List<RequestEvent> geEvents(List<RequestEvent> events) {
+        List<RequestEvent> result = new ArrayList<>();
+        for (RequestEvent requestEvent : events) {
+            result.add(new RequestEvent(requestEvent));
+        }
+        return result;
+    }
 }
