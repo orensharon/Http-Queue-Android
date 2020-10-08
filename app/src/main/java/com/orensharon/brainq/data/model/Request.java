@@ -4,7 +4,7 @@ import com.orensharon.brainq.service.HTTPMethods;
 
 import java.io.Serializable;
 
-public class Request implements Serializable {
+public class Request {
 
     private long id;
     private final String endpoint;
