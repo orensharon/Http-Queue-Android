@@ -2,19 +2,20 @@ package com.orensharon.brainq.presentation.vm;
 
 import androidx.lifecycle.LiveData;
 
-import com.orensharon.brainq.presentation.model.GraphTime;
 import com.orensharon.brainq.presentation.model.RequestEvent;
 
 import java.util.List;
 
 public interface IVisualizationVM {
     void init();
-    LiveData<GraphTime> getGraphTime();
+    LiveData<Integer> getTimeScale();
     LiveData<Boolean> getValidClick();
     LiveData<Boolean> getInvalidClick();
     LiveData<RequestEvent> getLastSuccessEvent();
     LiveData<RequestEvent> getLastFailedEvent();
-    long getStart();
+    // TODO:
+    long getStartTime();
+    long getEndTime();
     List<RequestEvent> getAllSuccessEvents();
     List<RequestEvent> getAllFailedEvents();
 }

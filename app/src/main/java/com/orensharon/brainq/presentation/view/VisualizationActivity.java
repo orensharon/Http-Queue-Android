@@ -22,7 +22,6 @@ import com.orensharon.brainq.data.model.Request;
 import com.orensharon.brainq.databinding.ActivityVisualizationBinding;
 import com.orensharon.brainq.mock.Util;
 import com.orensharon.brainq.presentation.TimeScale;
-import com.orensharon.brainq.presentation.model.GraphTime;
 import com.orensharon.brainq.presentation.model.RequestEvent;
 import com.orensharon.brainq.presentation.vm.IVisualizationVM;
 import com.orensharon.brainq.presentation.vm.VisualizationVM;
@@ -41,7 +40,7 @@ public class VisualizationActivity extends AppCompatActivity {
 
     private LineGraphSeries<DataPoint> successSeries;
     private LineGraphSeries<DataPoint> failedSeries;
-    private DateAsXAxisLabelFormatter hourlyFormat, dailyFormat, weeklyFormat;
+    private DateAsXAxisLabelFormatter minutelyFormat, hourlyFormat, dailyFormat, weeklyFormat;
 
     private ActivityVisualizationBinding binding;
     private IVisualizationVM viewModel;
@@ -70,7 +69,7 @@ public class VisualizationActivity extends AppCompatActivity {
         this.viewModel.getInvalidClick().observe(this, b -> this.sendInvalid());
         this.viewModel.getLastSuccessEvent().observe(this, this::appendSuccessEvent);
         this.viewModel.getLastFailedEvent().observe(this, this::appendFailedEvent);
-        this.viewModel.getGraphTime().observe(this, this::applyTimeScale);
+        this.viewModel.getTimeScale().observe(this, this::applyTimeScale);
     }
 
     private void appendSuccessEvent(RequestEvent event) {
@@ -102,9 +101,11 @@ public class VisualizationActivity extends AppCompatActivity {
         this.startService(i);
     }
 
-    private void applyTimeScale(GraphTime graphTime) {
-        LabelFormatter labelFormatter = this.getLabelFormatter(graphTime.getTimeScale());
-        this.createGraphView(graphTime.getStart(), graphTime.getEnd(), labelFormatter);
+    private void applyTimeScale(int timeScale) {
+        LabelFormatter labelFormatter = this.getLabelFormatter(timeScale);
+        long start = this.viewModel.getStartTime();
+        long end = this.viewModel.getEndTime();
+        this.createGraphView(start, end, labelFormatter);
     }
 
     private void createGraphView(long start, long end, LabelFormatter labelFormatter) {
@@ -125,6 +126,7 @@ public class VisualizationActivity extends AppCompatActivity {
 
     private void initGraphComponents() {
         // Init x axis label formatter
+        this.minutelyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getMinutelyDateInFormat());
         this.hourlyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getHourlyDateInFormat());
         this.dailyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getDailyDateInFormat());
         this.weeklyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getWeeklyDateInFormat());
@@ -138,6 +140,9 @@ public class VisualizationActivity extends AppCompatActivity {
     private LabelFormatter getLabelFormatter(int timeScale) {
         LabelFormatter labelFormatter = null;
         switch (timeScale) {
+            case TimeScale.MINUTELY:
+                labelFormatter = this.minutelyFormat;
+                break;
             case TimeScale.HOURLY:
                 labelFormatter = this.hourlyFormat;
                 break;
@@ -152,7 +157,7 @@ public class VisualizationActivity extends AppCompatActivity {
     }
 
     private LineGraphSeries<DataPoint> initSeries(List<RequestEvent> events) {
-        long x = this.viewModel.getStart();
+        long x = this.viewModel.getStartTime();
         DataPoint[] dataPoints = new DataPoint[events.size() + 1];
         dataPoints[0] = new DataPoint(x, 0);
         for (int i = 0; i < dataPoints.length - 1; i++) {

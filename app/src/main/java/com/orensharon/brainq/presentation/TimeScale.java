@@ -1,7 +1,8 @@
 package com.orensharon.brainq.presentation;
 
 public interface TimeScale {
-    int HOURLY = 0;
-    int DAILY = 1;
-    int WEEKLY = 2;
+    int MINUTELY = 0;
+    int HOURLY = 1;
+    int DAILY = 2;
+    int WEEKLY = 3;
 }

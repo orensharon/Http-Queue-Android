@@ -41,7 +41,11 @@ public class GraphTime {
 
     private long computeEnd(int timeScale) {
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(this.start);
         switch (timeScale) {
+            case TimeScale.MINUTELY:
+                calendar.add(Calendar.MINUTE, 1);
+                break;
             case TimeScale.HOURLY:
                 calendar.add(Calendar.HOUR_OF_DAY, 1);
                 break;

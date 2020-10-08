@@ -8,7 +8,7 @@ public class Visualization {
     private final List<RequestEvent> successEvents;
     private final List<RequestEvent> failedEvents;
 
-    private GraphTime graphTime;
+    private final GraphTime graphTime;
 
     // TODO: get success ratio by time
 
@@ -39,8 +39,16 @@ public class Visualization {
         return (int)(100 * ((double)successes / (successes + fails)));
     }
 
-    public GraphTime getGraphTime() {
-        return new GraphTime(this.graphTime);
+    public long getEndTime() {
+        return this.graphTime.getEnd();
+    }
+
+    public long getStartTime() {
+        return this.graphTime.getStart();
+    }
+
+    public int getTimeScale() {
+        return this.graphTime.getTimeScale();
     }
 
     public List<RequestEvent> getAllFailedEvents() {

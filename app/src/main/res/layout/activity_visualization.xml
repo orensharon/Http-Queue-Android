@@ -43,6 +43,12 @@
             <RadioButton
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:id="@+id/minute"
+                app:onChecked="@{() -> viewModel.changeTimeScale(TimeScale.MINUTELY)}"
+                android:text="Minute"/>
+            <RadioButton
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
                 android:id="@+id/hour"
                 app:onChecked="@{() -> viewModel.changeTimeScale(TimeScale.HOURLY)}"
                 android:text="Hour"/>

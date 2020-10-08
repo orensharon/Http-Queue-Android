@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.orensharon.brainq.data.event.RequestStateChangedEvent;
 import com.orensharon.brainq.presentation.TimeScale;
-import com.orensharon.brainq.presentation.model.GraphTime;
 import com.orensharon.brainq.presentation.model.RequestEvent;
 import com.orensharon.brainq.presentation.model.Visualization;
 import com.orensharon.brainq.presentation.util.SingleLiveEvent;
@@ -23,9 +22,9 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
 
     private final static String TAG = VisualizationVM.class.getSimpleName();
 
-    private Visualization visualizationModel;
+    private Visualization visualization;
 
-    private final MutableLiveData<GraphTime> graphTime;
+    private final MutableLiveData<Integer> timeScale;
     private final MutableLiveData<Integer> ratio;
     private final SingleLiveEvent<Boolean> validClick;
     private final SingleLiveEvent<Boolean> invalidClick;
@@ -36,16 +35,16 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
 
     public VisualizationVM(EventBus eventBus) {
         this.eventBus = eventBus;
-        this.visualizationModel = new Visualization(TimeScale.HOURLY);
-        this.graphTime = new MutableLiveData<>();
+        this.visualization = new Visualization(TimeScale.MINUTELY);
+        this.timeScale = new MutableLiveData<>();
         this.ratio = new MutableLiveData<>();
         this.validClick = new SingleLiveEvent<>();
         this.invalidClick = new SingleLiveEvent<>();
         this.successEvent = new SingleLiveEvent<>();
         this.failedEvent = new SingleLiveEvent<>();
         // TODO: here?
-        this.graphTime.setValue(this.visualizationModel.getGraphTime());
-        this.ratio.setValue(this.visualizationModel.getSuccessRatio());
+        this.timeScale.setValue(this.visualization.getTimeScale());
+        this.ratio.setValue(this.visualization.getSuccessRatio());
     }
 
     @Override
@@ -63,8 +62,8 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
     }
 
     @Override
-    public LiveData<GraphTime> getGraphTime() {
-        return this.graphTime;
+    public LiveData<Integer> getTimeScale() {
+        return this.timeScale;
     }
 
     @Override
@@ -88,24 +87,30 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
     }
 
     @Override
-    public long getStart() {
-        return this.visualizationModel.getGraphTime().getStart();
+    public long getStartTime() {
+        return this.visualization.getStartTime();
+    }
+
+    @Override
+    public long getEndTime() {
+        return this.visualization.getEndTime();
     }
 
     @Override
     public List<RequestEvent> getAllSuccessEvents() {
-        return this.visualizationModel.getAllSuccessEvents();
+        return this.visualization.getAllSuccessEvents();
     }
 
     @Override
     public List<RequestEvent> getAllFailedEvents() {
-        return this.visualizationModel.getAllFailedEvents();
+        return this.visualization.getAllFailedEvents();
     }
 
     public void changeTimeScale(int timeScale) {
-        this.visualizationModel.changeTimeScale(timeScale);
-        this.graphTime.setValue(this.visualizationModel.getGraphTime());
+        this.visualization.changeTimeScale(timeScale);
+        this.timeScale.setValue(this.visualization.getTimeScale());
     }
+
     public void onValidClicked() {
         this.validClick.setValue(true);
     }
@@ -118,20 +123,16 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
         return ratio;
     }
 
-    public int getTimeScale() {
-        return this.visualizationModel.getGraphTime().getTimeScale();
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRequestStateChangedEvent(RequestStateChangedEvent event) {
         Log.i(TAG, "onRequestStateChangedEvent " + event.toString());
-        RequestEvent requestEvent = this.visualizationModel.add(event.requestId, event.state, event.ts);
+        RequestEvent requestEvent = this.visualization.add(event.requestId, event.state, event.ts);
         if (event.state) {
             this.successEvent.setValue(requestEvent);
         } else {
             this.failedEvent.setValue(requestEvent);
         }
-        int ratio = this.visualizationModel.getSuccessRatio();
+        int ratio = this.visualization.getSuccessRatio();
         this.ratio.setValue(ratio);
     }
 }

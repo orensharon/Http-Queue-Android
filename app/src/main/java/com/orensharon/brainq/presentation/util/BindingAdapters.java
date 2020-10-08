@@ -22,6 +22,9 @@ public class BindingAdapters {
     public static void setTimeScale(RadioGroup radioGroup, Integer timeScale){
         int id;
         switch (timeScale) {
+            case TimeScale.MINUTELY:
+                id = R.id.minute;
+                break;
             case TimeScale.HOURLY:
                 id = R.id.hour;
                 break;
@@ -42,6 +45,8 @@ public class BindingAdapters {
     public static int getTimeScale(RadioGroup radioGroup) {
         int id = radioGroup.getCheckedRadioButtonId();
         switch (id) {
+            case R.id.minute:
+                return TimeScale.MINUTELY;
             case R.id.hour:
                 return TimeScale.HOURLY;
             case R.id.day:
@@ -49,7 +54,7 @@ public class BindingAdapters {
             case R.id.week:
                 return TimeScale.WEEKLY;
         }
-        return TimeScale.HOURLY;
+        return TimeScale.MINUTELY;
     }
 
     @BindingAdapter("timeScaleAttrChanged")
