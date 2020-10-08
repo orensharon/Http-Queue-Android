@@ -7,6 +7,10 @@ public class Visualization {
     private final List<RequestEvent> successEvents;
     private final List<RequestEvent> failedEvents;
 
+    // TODO: time scale
+    // TODO: get success ratio by time
+    // TODO: add start ts, end ts
+
     public Visualization() {
         this.successEvents = new ArrayList<>();
         this.failedEvents = new ArrayList<>();

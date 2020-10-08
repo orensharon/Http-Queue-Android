@@ -7,8 +7,11 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.LabelFormatter;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -34,8 +37,6 @@ public class VisualizationActivity extends AppCompatActivity {
 
     private final static String TAG = VisualizationActivity.class.getSimpleName();
 
-    private GraphView graphView;
-
     private LineGraphSeries<DataPoint> successSeries;
     private LineGraphSeries<DataPoint> failedSeries;
     private DateAsXAxisLabelFormatter hourlyFormat, dailyFormat, weeklyFormat;
@@ -58,9 +59,7 @@ public class VisualizationActivity extends AppCompatActivity {
         this.binding.setLifecycleOwner(this);
         this.binding.setViewModel(this.viewModel);
 
-        this.graphView = binding.graph;
-
-        // Init x axises
+        // Init x axis label formatter
         this.hourlyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getHourlyDateInFormat());
         this.dailyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getDailyDateInFormat());
         this.weeklyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getWeeklyDateInFormat());
@@ -76,13 +75,6 @@ public class VisualizationActivity extends AppCompatActivity {
         });
         this.successSeries.setColor(Color.GREEN);
         this.failedSeries.setColor(Color.RED);
-
-        this.graphView.addSeries(this.successSeries);
-        this.graphView.addSeries(this.failedSeries);
-
-        this.graphView.getViewport().setMinX(this.start);
-        this.graphView.getGridLabelRenderer().setNumHorizontalLabels(3);
-        this.graphView.getViewport().setXAxisBoundsManual(true);
 
         this.initObservers();
         this.viewModel.init();
@@ -139,25 +131,38 @@ public class VisualizationActivity extends AppCompatActivity {
         }
     }
 
+    // TODO START/END MOVE TO VM
     private void applyHourly() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR_OF_DAY, 1);
-        this.graphView.getGridLabelRenderer().setLabelFormatter(this.hourlyFormat);
-        this.graphView.getViewport().setMaxX(calendar.getTimeInMillis());
+        this.createGraphView(this.start, calendar.getTimeInMillis(), this.hourlyFormat);
     }
 
     private void applyDaily() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
-        this.graphView.getGridLabelRenderer().setLabelFormatter(this.dailyFormat);
-        this.graphView.getViewport().setMaxX(calendar.getTimeInMillis());
+        this.createGraphView(this.start, calendar.getTimeInMillis(), this.dailyFormat);
     }
 
     private void applyWeekly() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.WEEK_OF_YEAR, 1);
-        this.graphView.getGridLabelRenderer().setLabelFormatter(this.weeklyFormat);
-        this.graphView.getViewport().setMaxX(calendar.getTimeInMillis());
+        this.createGraphView(this.start, calendar.getTimeInMillis(), this.weeklyFormat);
+    }
+
+    private void createGraphView(long start, long end, LabelFormatter labelFormatter) {
+        this.binding.graphContainer.removeAllViews();
+        GraphView graphView = new GraphView(this);
+        graphView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        graphView.addSeries(this.successSeries);
+        graphView.addSeries(this.failedSeries);
+        graphView.getViewport().setMinX(start);
+        graphView.getViewport().setMaxX(end);
+        graphView.getGridLabelRenderer().setNumHorizontalLabels(3);
+        graphView.getGridLabelRenderer().setHumanRounding(false);
+        graphView.getGridLabelRenderer().setLabelFormatter(labelFormatter);
+        graphView.getViewport().setXAxisBoundsManual(true);
+        binding.graphContainer.addView(graphView);
     }
 }
