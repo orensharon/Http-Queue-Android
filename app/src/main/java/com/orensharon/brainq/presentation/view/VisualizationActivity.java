@@ -16,17 +16,17 @@ import com.jjoe64.graphview.LabelFormatter;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
-import com.orensharon.BrainQ;
 import com.orensharon.brainq.App;
 import com.orensharon.brainq.R;
+import com.orensharon.brainq.data.model.Request;
 import com.orensharon.brainq.databinding.ActivityVisualizationBinding;
 import com.orensharon.brainq.mock.Util;
+import com.orensharon.brainq.presentation.TimeScale;
 import com.orensharon.brainq.presentation.model.GraphTime;
 import com.orensharon.brainq.presentation.model.RequestEvent;
 import com.orensharon.brainq.presentation.vm.IVisualizationVM;
 import com.orensharon.brainq.presentation.vm.VisualizationVM;
 import com.orensharon.brainq.presentation.vm.VisualizationViewModelFactory;
-import com.orensharon.brainq.service.HTTPMethods;
 import com.orensharon.brainq.service.HttpQueueIntentService;
 import com.orensharon.brainq.presentation.util.DateUtil;
 
@@ -87,11 +87,11 @@ public class VisualizationActivity extends AppCompatActivity {
     }
 
     private void sendInvalid() {
-        this.send(HTTPMethods.Method.PUT, Util.getInvalidURL(), Util.generatePayload());
+        this.send(Request.Method.PUT, Util.getInvalidURL(), Util.generatePayload());
     }
 
     private void sendValid() {
-        this.send(HTTPMethods.Method.PUT, Util.getValidURL(), Util.generatePayload());
+        this.send(Request.Method.PUT, Util.getValidURL(), Util.generatePayload());
     }
 
     private void send(int method, String endPoint, String payload) {
@@ -139,13 +139,13 @@ public class VisualizationActivity extends AppCompatActivity {
     private LabelFormatter getLabelFormatter(int timeScale) {
         LabelFormatter labelFormatter = null;
         switch (timeScale) {
-            case BrainQ.TimeScale.HOURLY:
+            case TimeScale.HOURLY:
                 labelFormatter = this.hourlyFormat;
                 break;
-            case BrainQ.TimeScale.DAILY:
+            case TimeScale.DAILY:
                 labelFormatter = this.dailyFormat;
                 break;
-            case BrainQ.TimeScale.WEEKLY:
+            case TimeScale.WEEKLY:
                 labelFormatter = this.weeklyFormat;
                 break;
         }

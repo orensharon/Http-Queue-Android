@@ -1,6 +1,6 @@
 package com.orensharon.brainq.presentation.model;
 
-import com.orensharon.BrainQ;
+import com.orensharon.brainq.presentation.TimeScale;
 
 import java.util.Calendar;
 
@@ -10,7 +10,7 @@ public class GraphTime {
     private int timeScale;
 
     public GraphTime(int timeScale) {
-        // TODO:Ilan - calendar get instance heavy?
+        // TODO: calendar get instance heavy?
         this.start = Calendar.getInstance().getTimeInMillis();
         this.timeScale = timeScale;
         this.end = this.computeEnd(timeScale);
@@ -42,14 +42,14 @@ public class GraphTime {
     private long computeEnd(int timeScale) {
         Calendar calendar = Calendar.getInstance();
         switch (timeScale) {
-            case BrainQ.TimeScale.HOURLY:
+            case TimeScale.HOURLY:
                 calendar.add(Calendar.HOUR_OF_DAY, 1);
                 break;
-            case BrainQ.TimeScale.DAILY:
+            case TimeScale.DAILY:
                 calendar.set(Calendar.HOUR_OF_DAY, 23);
                 calendar.set(Calendar.MINUTE, 59);
                 break;
-            case BrainQ.TimeScale.WEEKLY:
+            case TimeScale.WEEKLY:
                 calendar.add(Calendar.WEEK_OF_YEAR, 1);
                 break;
         }

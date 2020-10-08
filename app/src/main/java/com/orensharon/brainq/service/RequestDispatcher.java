@@ -43,7 +43,7 @@ public class RequestDispatcher {
 
     private int transformMethod(int method) {
         switch (method) {
-            case HTTPMethods.Method.PUT:
+            case com.orensharon.brainq.data.model.Request.Method.PUT:
                 return Request.Method.PUT;
             default:
                 return -2;

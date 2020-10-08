@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="com.orensharon.BrainQ.TimeScale"/>
+        <import type="com.orensharon.brainq.presentation.TimeScale"/>
         <variable
             name="viewModel"
             type="com.orensharon.brainq.presentation.vm.VisualizationVM" />
@@ -33,15 +33,6 @@
                 android:onClick="@{() -> viewModel.onInvalidClicked()}"
                 android:id="@+id/sendInvalidButton"/>
         </LinearLayout>
-        <com.orensharon.brainq.presentation.view.RatioTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:padding="16dp"
-            app:ratio="@{viewModel.getRatio()}"/>
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,6 +61,15 @@
                 app:onChecked="@{() -> viewModel.changeTimeScale(TimeScale.WEEKLY)}"
                 android:text="Week"/>
         </RadioGroup>
+        <com.orensharon.brainq.presentation.view.RatioTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:padding="16dp"
+            app:ratio="@{viewModel.getRatio()}"/>
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -7,8 +7,8 @@ import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 
-import com.orensharon.BrainQ;
 import com.orensharon.brainq.R;
+import com.orensharon.brainq.presentation.TimeScale;
 import com.orensharon.brainq.presentation.view.RatioTextView;
 
 public class BindingAdapters {
@@ -22,13 +22,13 @@ public class BindingAdapters {
     public static void setTimeScale(RadioGroup radioGroup, Integer timeScale){
         int id;
         switch (timeScale) {
-            case BrainQ.TimeScale.HOURLY:
+            case TimeScale.HOURLY:
                 id = R.id.hour;
                 break;
-            case BrainQ.TimeScale.DAILY:
+            case TimeScale.DAILY:
                 id = R.id.day;
                 break;
-            case BrainQ.TimeScale.WEEKLY:
+            case TimeScale.WEEKLY:
                 id = R.id.week;
                 break;
             default:
@@ -43,13 +43,13 @@ public class BindingAdapters {
         int id = radioGroup.getCheckedRadioButtonId();
         switch (id) {
             case R.id.hour:
-                return BrainQ.TimeScale.HOURLY;
+                return TimeScale.HOURLY;
             case R.id.day:
-                return BrainQ.TimeScale.DAILY;
+                return TimeScale.DAILY;
             case R.id.week:
-                return BrainQ.TimeScale.WEEKLY;
+                return TimeScale.WEEKLY;
         }
-        return BrainQ.TimeScale.HOURLY;
+        return TimeScale.HOURLY;
     }
 
     @BindingAdapter("timeScaleAttrChanged")

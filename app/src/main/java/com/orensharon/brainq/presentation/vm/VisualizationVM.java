@@ -6,8 +6,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.orensharon.BrainQ;
 import com.orensharon.brainq.data.event.RequestStateChangedEvent;
+import com.orensharon.brainq.presentation.TimeScale;
 import com.orensharon.brainq.presentation.model.GraphTime;
 import com.orensharon.brainq.presentation.model.RequestEvent;
 import com.orensharon.brainq.presentation.model.Visualization;
@@ -34,7 +34,7 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
 
     public VisualizationVM(EventBus eventBus) {
         this.eventBus = eventBus;
-        this.visualizationModel = new Visualization(BrainQ.TimeScale.HOURLY);
+        this.visualizationModel = new Visualization(TimeScale.HOURLY);
         this.graphTime = new MutableLiveData<>();
         this.ratio = new MutableLiveData<>();
         this.validClick = new SingleLiveEvent<>();

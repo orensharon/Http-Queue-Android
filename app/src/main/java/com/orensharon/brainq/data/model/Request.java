@@ -1,10 +1,10 @@
 package com.orensharon.brainq.data.model;
 
-import com.orensharon.brainq.service.HTTPMethods;
-
-import java.io.Serializable;
-
 public class Request {
+
+    public interface Method {
+        int PUT = 0;
+    }
 
     private long id;
     private final String endpoint;
@@ -40,7 +40,7 @@ public class Request {
     }
 
     public static Request put(String endpoint, String jsonPayload) {
-        return new Request(endpoint, jsonPayload, HTTPMethods.Method.PUT);
+        return new Request(endpoint, jsonPayload, Method.PUT);
     }
 
     public void setId(long id) {

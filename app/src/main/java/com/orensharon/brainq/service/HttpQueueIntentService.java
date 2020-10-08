@@ -25,7 +25,7 @@ public class HttpQueueIntentService extends IntentService implements HTTPMethods
     RequestService requestService;
 
     public HttpQueueIntentService() {
-        this("HttpService");
+        this("HttpQueueIntentService");
     }
 
     public HttpQueueIntentService(String name) {
@@ -55,7 +55,7 @@ public class HttpQueueIntentService extends IntentService implements HTTPMethods
         String jsonPayload = intent.getStringExtra("jsonPayload");
         int method = intent.getIntExtra("method", -1);
         switch (method) {
-            case Method.PUT:
+            case Request.Method.PUT:
                 this.put(this, endPoint, jsonPayload);
                 break;
             default:
