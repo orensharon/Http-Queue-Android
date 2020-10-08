@@ -53,21 +53,21 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:id="@+id/hour"
-                app:onCheck="@{() -> viewModel.changeTimeScale(TimeScale.HOURLY)}"
+                app:onChecked="@{() -> viewModel.changeTimeScale(TimeScale.HOURLY)}"
                 android:text="Hour"/>
 
             <RadioButton
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:id="@+id/day"
-                app:onCheck="@{() -> viewModel.changeTimeScale(TimeScale.DAILY)}"
+                app:onChecked="@{() -> viewModel.changeTimeScale(TimeScale.DAILY)}"
                 android:text="Day"/>
 
             <RadioButton
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:id="@+id/week"
-                app:onCheck="@{() -> viewModel.changeTimeScale(TimeScale.WEEKLY)}"
+                app:onChecked="@{() -> viewModel.changeTimeScale(TimeScale.WEEKLY)}"
                 android:text="Week"/>
         </RadioGroup>
         <FrameLayout

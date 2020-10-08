@@ -57,7 +57,7 @@ public class BindingAdapters {
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> listener.onChange());
     }
 
-    @BindingAdapter("onCheck")
+    @BindingAdapter("onChecked")
     public static void setListener(RadioButton radioButton, final InverseBindingListener listener) {
         radioButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (!isChecked) {

@@ -17,7 +17,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class VisualizationVM extends ViewModel {
+public class VisualizationVM extends ViewModel implements IVisualizationVM {
 
     private final static String TAG = VisualizationVM.class.getSimpleName();
 
@@ -41,11 +41,12 @@ public class VisualizationVM extends ViewModel {
         this.invalidClick = new SingleLiveEvent<>();
         this.successEvent = new SingleLiveEvent<>();
         this.failedEvent = new SingleLiveEvent<>();
-        // TODO: ilan - here?
+        // TODO: here?
         this.graphTime.setValue(this.visualizationModel.getGraphTime());
         this.ratio.setValue(this.visualizationModel.getSuccessRatio());
     }
 
+    @Override
     public void init() {
         if (!this.eventBus.isRegistered(this)) {
             this.eventBus.register(this);
@@ -59,31 +60,40 @@ public class VisualizationVM extends ViewModel {
         this.eventBus.unregister(this);
     }
 
-    public void changeTimeScale(int timeScale) {
-        this.visualizationModel.changeTimeScale(timeScale);
-        this.graphTime.setValue(this.visualizationModel.getGraphTime());
-    }
-
+    @Override
     public LiveData<GraphTime> getGraphTime() {
         return this.graphTime;
     }
 
+    @Override
     public LiveData<Boolean> getValidClick() {
         return validClick;
     }
 
+    @Override
     public LiveData<Boolean> getInvalidClick() {
         return invalidClick;
     }
 
+    @Override
     public LiveData<RequestEvent> getLastSuccessEvent() {
         return successEvent;
     }
 
+    @Override
     public LiveData<RequestEvent> getLastFailedEvent() {
         return failedEvent;
     }
 
+    @Override
+    public long getStart() {
+        return this.visualizationModel.getGraphTime().getStart();
+    }
+
+    public void changeTimeScale(int timeScale) {
+        this.visualizationModel.changeTimeScale(timeScale);
+        this.graphTime.setValue(this.visualizationModel.getGraphTime());
+    }
     public void onValidClicked() {
         this.validClick.setValue(true);
     }
@@ -98,10 +108,6 @@ public class VisualizationVM extends ViewModel {
 
     public int getTimeScale() {
         return this.visualizationModel.getGraphTime().getTimeScale();
-    }
-
-    public long getStart() {
-        return this.visualizationModel.getGraphTime().getStart();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

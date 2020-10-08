@@ -23,6 +23,7 @@ import com.orensharon.brainq.databinding.ActivityVisualizationBinding;
 import com.orensharon.brainq.mock.Util;
 import com.orensharon.brainq.presentation.model.GraphTime;
 import com.orensharon.brainq.presentation.model.RequestEvent;
+import com.orensharon.brainq.presentation.vm.IVisualizationVM;
 import com.orensharon.brainq.presentation.vm.VisualizationVM;
 import com.orensharon.brainq.presentation.vm.VisualizationViewModelFactory;
 import com.orensharon.brainq.service.HTTPMethods;
@@ -43,7 +44,7 @@ public class VisualizationActivity extends AppCompatActivity {
     private DateAsXAxisLabelFormatter hourlyFormat, dailyFormat, weeklyFormat;
 
     private ActivityVisualizationBinding binding;
-    private VisualizationVM viewModel;
+    private IVisualizationVM viewModel;
 
     @Inject
     VisualizationViewModelFactory visualizationViewModelFactory;
@@ -56,7 +57,7 @@ public class VisualizationActivity extends AppCompatActivity {
         this.binding = DataBindingUtil.setContentView(this, R.layout.activity_visualization);
         this.viewModel = new ViewModelProvider(this, this.visualizationViewModelFactory).get(VisualizationVM.class);
         this.binding.setLifecycleOwner(this);
-        this.binding.setViewModel(this.viewModel);
+        this.binding.setViewModel((VisualizationVM) this.viewModel);
 
         this.initObservers();
         this.viewModel.init();
@@ -106,6 +107,35 @@ public class VisualizationActivity extends AppCompatActivity {
         this.createGraphView(graphTime.getStart(), graphTime.getEnd(), labelFormatter);
     }
 
+    private void createGraphView(long start, long end, LabelFormatter labelFormatter) {
+        this.binding.graphContainer.removeAllViews();
+        GraphView graphView = new GraphView(this);
+        graphView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        graphView.addSeries(this.successSeries);
+        graphView.addSeries(this.failedSeries);
+        graphView.getViewport().setMinX(start);
+        graphView.getViewport().setMaxX(end);
+        graphView.getViewport().setXAxisBoundsManual(true);
+        graphView.getGridLabelRenderer().setHumanRounding(false);
+        graphView.getGridLabelRenderer().setNumHorizontalLabels(5);
+        graphView.getGridLabelRenderer().setLabelFormatter(labelFormatter);
+        this.binding.graphContainer.addView(graphView);
+    }
+
+    private void initGraphComponents() {
+        // Init x axis label formatter
+        this.hourlyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getHourlyDateInFormat());
+        this.dailyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getDailyDateInFormat());
+        this.weeklyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getWeeklyDateInFormat());
+
+        // Series
+        long x = this.viewModel.getStart();
+        this.successSeries = new LineGraphSeries<>(new DataPoint[]{new DataPoint(x, 0)});
+        this.failedSeries = new LineGraphSeries<>(new DataPoint[]{new DataPoint(x, 0)});
+        this.successSeries.setColor(Color.GREEN);
+        this.failedSeries.setColor(Color.RED);
+    }
+
     private LabelFormatter getLabelFormatter(int timeScale) {
         LabelFormatter labelFormatter = null;
         switch (timeScale) {
@@ -122,35 +152,4 @@ public class VisualizationActivity extends AppCompatActivity {
         return labelFormatter;
     }
 
-    private void createGraphView(long start, long end, LabelFormatter labelFormatter) {
-        this.binding.graphContainer.removeAllViews();
-        GraphView graphView = new GraphView(this);
-        graphView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        graphView.addSeries(this.successSeries);
-        graphView.addSeries(this.failedSeries);
-        graphView.getViewport().setMinX(start);
-        graphView.getViewport().setMaxX(end);
-        graphView.getViewport().setXAxisBoundsManual(true);
-        graphView.getGridLabelRenderer().setHumanRounding(false);
-        //graphView.getGridLabelRenderer().setNumHorizontalLabels(5);
-        graphView.getGridLabelRenderer().setLabelFormatter(labelFormatter);
-        this.binding.graphContainer.addView(graphView);
-    }
-
-    private void initGraphComponents() {
-        // Init x axis label formatter
-        this.hourlyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getHourlyDateInFormat());
-        this.dailyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getDailyDateInFormat());
-        this.weeklyFormat = new DateAsXAxisLabelFormatter(this, DateUtil.getWeeklyDateInFormat());
-
-        // Series
-        this.successSeries = new LineGraphSeries<>(new DataPoint[]{
-                new DataPoint(this.viewModel.getStart(), 0)
-        });
-        this.failedSeries = new LineGraphSeries<>(new DataPoint[]{
-                new DataPoint(this.viewModel.getStart(), 0)
-        });
-        this.successSeries.setColor(Color.GREEN);
-        this.failedSeries.setColor(Color.RED);
-    }
 }
