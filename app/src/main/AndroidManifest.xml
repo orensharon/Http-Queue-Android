@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.orensharon.brainq">
+    package="com.orensharon.httpqueue">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,8 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".App">
-        <activity android:name=".presentation.view.VisualizationActivity">
+        android:name="com.orensharon.httpqueue.App">
+        <activity android:name="com.orensharon.httpqueue.presentation.view.VisualizationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,9 +21,9 @@
         </activity>
         <service
             android:enabled="true"
-            android:name=".service.HttpQueueIntentService" />
+            android:name="com.orensharon.httpqueue.service.HttpQueueIntentService" />
         <receiver
-            android:name=".mock.Receiver">
+            android:name="com.orensharon.httpqueue.mock.Receiver">
         </receiver>
     </application>
 

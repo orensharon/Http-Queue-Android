@@ -4,10 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="com.orensharon.brainq.presentation.TimeScale"/>
+        <import type="com.orensharon.httpqueue.presentation.TimeScale"/>
         <variable
             name="viewModel"
-            type="com.orensharon.brainq.presentation.vm.VisualizationVM" />
+            type="com.orensharon.httpqueue.presentation.vm.VisualizationVM" />
     </data>
     <LinearLayout
         android:layout_width="match_parent"
@@ -67,7 +67,7 @@
                 app:onChecked="@{() -> viewModel.changeTimeScale(TimeScale.WEEKLY)}"
                 android:text="Week"/>
         </RadioGroup>
-        <com.orensharon.brainq.presentation.view.RatioTextView
+        <com.orensharon.httpqueue.presentation.view.RatioTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
