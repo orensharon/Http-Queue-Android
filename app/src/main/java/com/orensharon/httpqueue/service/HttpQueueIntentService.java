@@ -3,8 +3,6 @@ package com.orensharon.httpqueue.service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
-import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -18,8 +16,6 @@ public class HttpQueueIntentService extends IntentService implements HTTPMethods
 
 
     private final static String TAG = HttpQueueIntentService.class.getSimpleName();
-
-    private final IBinder binder = new LocalBinder();
 
     @Inject
     RequestService requestService;
@@ -68,16 +64,5 @@ public class HttpQueueIntentService extends IntentService implements HTTPMethods
         Request request = Request.put(endpoint, jsonPayload);
         Log.i(TAG, "put: " + request.toString());
         this.requestService.add(request);
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return binder;
-    }
-
-    public class LocalBinder extends Binder {
-        public HttpQueueIntentService getService() {
-            return HttpQueueIntentService.this;
-        }
     }
 }
