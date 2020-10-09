@@ -45,6 +45,8 @@ public class VisualizationActivity extends AppCompatActivity {
     private ActivityVisualizationBinding binding;
     private IVisualizationVM viewModel;
 
+    private GraphView graphView;
+
     @Inject
     VisualizationViewModelFactory visualizationViewModelFactory;
 
@@ -62,6 +64,15 @@ public class VisualizationActivity extends AppCompatActivity {
         this.viewModel.init();
         this.initGraphComponents();
         //Mock.startSendMock(this.getApplicationContext());
+        /*Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                sendInvalid();
+                handler.postDelayed(this, 1000);
+            }
+        };
+        handler.postDelayed(runnable, 2000);*/
     }
 
     private void initObservers() {
@@ -109,6 +120,10 @@ public class VisualizationActivity extends AppCompatActivity {
     }
 
     private void createGraphView(long start, long end, LabelFormatter labelFormatter) {
+        if (this.graphView != null) {
+            this.graphView.removeAllSeries();
+            this.graphView = null;
+        }
         this.binding.graphContainer.removeAllViews();
         GraphView graphView = new GraphView(this);
         graphView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -122,6 +137,7 @@ public class VisualizationActivity extends AppCompatActivity {
         graphView.getGridLabelRenderer().setNumVerticalLabels(5);
         graphView.getGridLabelRenderer().setLabelFormatter(labelFormatter);
         this.binding.graphContainer.addView(graphView);
+        this.graphView = graphView;
     }
 
     private void initGraphComponents() {
