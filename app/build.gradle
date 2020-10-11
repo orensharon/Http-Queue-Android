@@ -27,6 +27,16 @@ android {
             buildConfigField "int", "BACKOFF_LIMIT", "10"
             buildConfigField "String", "API_URL", "\"https://jsonplaceholder.typicode.com\""
         }
+        staging {
+            initWith(buildTypes.debug)
+            buildConfigField "String", "API_URL", "\"https://url.com\""
+        }
+    }
+    testOptions {
+        unitTests {
+            // returns either null or zero when accessing platform APIs, rather than throwing an exception.
+            returnDefaultValues true
+        }
     }
     compileOptions {
         sourceCompatibility = 1.8
