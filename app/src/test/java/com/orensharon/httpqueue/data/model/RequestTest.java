@@ -15,10 +15,10 @@ public class RequestTest {
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
-/*    @Test
+    @Test
     public void fail() {
         Assert.assertTrue(false);
-    }*/
+    }
 
     @Test
     public void testCreatePutValidRequest_returnRequest() {
