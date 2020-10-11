@@ -11,6 +11,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 public class QueueWorker {
 
     private final static String TAG = QueueWorker.class.getSimpleName();
+    private final static long DELAY_BETWEEN_ENQUEUES = 100L;
 
     private volatile boolean started;
 
@@ -37,7 +38,7 @@ public class QueueWorker {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     this.mainJob();
-                    Thread.sleep(1000);
+                    Thread.sleep(DELAY_BETWEEN_ENQUEUES);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     break;

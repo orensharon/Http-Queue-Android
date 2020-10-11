@@ -13,7 +13,7 @@ public class Request {
     private long lastRetryMs;
     private int method;
 
-    public Request(String endpoint, String jsonPayload, int method) {
+    private Request(String endpoint, String jsonPayload, int method) {
         this.endpoint = endpoint;
         this.jsonPayload = jsonPayload;
         this.method = method;
@@ -40,14 +40,26 @@ public class Request {
     }
 
     public static Request put(String endpoint, String jsonPayload) {
+        if (endpoint == null) {
+            throw new NullPointerException("INVALID_ENDPOINT");
+        }
+        if (jsonPayload == null) {
+            throw new NullPointerException("INVALID_PAYLOAD");
+        }
         return new Request(endpoint, jsonPayload, Method.PUT);
     }
 
     public void setId(long id) {
+        if (this.id != 0) {
+            throw new RuntimeException("ID_ALREADY_EXISTS");
+        }
         this.id = id;
     }
 
     public void updateState(boolean state, long ts) {
+        if (this.lastRetryMs > ts) {
+            throw new RuntimeException("INVALID_TIMESTAMP");
+        }
         if (!state) {
             this.failed(ts);
             return;
@@ -89,17 +101,23 @@ public class Request {
 
     private void failed(long ts) {
         if (this.isSuccess()) {
-            return;
+            throw new RuntimeException("STATE_IMMUTABLE");
         }
         this.lastRetryMs = ts;
         this.retries++;
     }
 
     private void success() {
+        if (this.isSuccess()) {
+            return;
+        }
         this.retries = -1;
     }
 
     private long calculateNextRetryInterval() {
+        if (this.retries == 0) {
+            return 0;
+        }
         return (long) Math.pow(2, this.retries) * 1000;
     }
 
