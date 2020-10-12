@@ -60,12 +60,8 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation "android.arch.persistence.room:runtime:$lifecycle_version"
     annotationProcessor "android.arch.persistence.room:compiler:$lifecycle_version"
-
     implementation "com.google.dagger:dagger:2.21"
     annotationProcessor "com.google.dagger:dagger-compiler:2.21"
     annotationProcessor "com.google.dagger:dagger-android-processor:2.21"
@@ -78,4 +74,10 @@ dependencies {
 
     implementation 'org.greenrobot:eventbus:3.1.1'
 
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+    testImplementation "android.arch.core:core-testing:1.1.1"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
