@@ -79,11 +79,6 @@ public class ApplicationModule {
     }
 
     @Provides
-    VisualizationViewModelFactory provideVisualizationViewModelFactory(EventBus eventBus) {
-        return new VisualizationViewModelFactory(eventBus);
-    }
-
-    @Provides
     @Singleton
     RequestDatabase provideRequestDatabase(Context context) {
         return Room.databaseBuilder(context, RequestDatabase.class, "request_db").build();
