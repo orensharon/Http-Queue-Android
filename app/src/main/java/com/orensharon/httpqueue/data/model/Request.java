@@ -1,5 +1,6 @@
 package com.orensharon.httpqueue.data.model;
 
+// TODO: duplicates 5-6
 public class Request {
 
     public interface Method {
