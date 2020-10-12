@@ -31,15 +31,13 @@ public class RequestService {
         this.executor = executor;
     }
 
+    public void init() {
+        this.executor.execute(this.repository::init);
+    }
+
     public void start() {
-        this.executor.execute(() -> {
-            this.repository.init();
-            this.queueWorker.listen();
-            List<Request> requests = this.repository.list();
-            for (Request request : requests) {
-                this.addToQueue(request);
-            }
-        });
+        this.queueWorker.listen();
+        this.executor.execute(this::loadPastRequests);
     }
 
     public void add(Request request) {
@@ -47,6 +45,19 @@ public class RequestService {
             this.repository.store(request);
             this.addToQueue(request);
         });
+    }
+
+    private void loadPastRequests() {
+        List<Request> requests = this.repository.list();
+        for (Request request : requests) {
+            try {
+                this.addToQueue(request);
+            } catch (Exception e) {
+                // Failed to add request into queue worker
+                // TODO: What should I do about it?
+                e.printStackTrace();
+            }
+        }
     }
 
     private void addToQueue(Request request) {
@@ -65,32 +76,45 @@ public class RequestService {
 
     // Callback fired after request dequeue
     private void onRequestReady(long requestId) {
-        this.executor.execute(() -> {
-            Log.i(TAG, "onRequestReady requestId=" + requestId);
-            Request request = this.repository.getById(requestId);
-            int method = request.getMethod();
-            String url = request.getEndpoint();
-            String payload = request.getPayload();
-            RequestDispatcher.Callback dispatchedCallback = (state) -> this.onDispatcherResponse(requestId, state);
+        this.executor.execute(() -> this.dispatchRequest(requestId));
+    }
+
+    // Send request
+    private void dispatchRequest(long requestId) {
+        Log.i(TAG, "onRequestReady requestId=" + requestId);
+        Request request = this.repository.getById(requestId);
+        int method = request.getMethod();
+        String url = request.getEndpoint();
+        String payload = request.getPayload();
+        RequestDispatcher.Callback dispatchedCallback = (state) -> this.onDispatcherResponse(requestId, state);
+        try {
             this.dispatcher.dispatch(method, url, payload, dispatchedCallback);
-        });
+        } catch (Exception e) {
+            // Failed to send request - add it back to dispatch queue
+            // TODO: should I use retries form this kind of fails?
+            this.addToQueue(request);
+            e.printStackTrace();
+        }
+
     }
 
     //Callback fired after receiving response
     private void onDispatcherResponse(long requestId, boolean state) {
-        this.executor.execute(() -> {
-            Log.i(TAG, "onDispatcherResponse - requestId:" + requestId + " state: " + state);
-            long ts = SystemClock.elapsedRealtime();
-            Request request = this.repository.getById(requestId);
-            request.updateState(state, ts);
-            this.repository.store(request);
-            long rtc = System.currentTimeMillis();
-            this.eventBus.post(new RequestStateChangedEvent(requestId, rtc, state));
-            if (state) {
-                return;
-            }
-            this.addToQueue(request);
-        });
+        this.executor.execute(() -> this.handleRequestResult(requestId, state));
+    }
+
+    private void handleRequestResult(long requestId, boolean state) {
+        Log.i(TAG, "onDispatcherResponse - requestId:" + requestId + " state: " + state);
+        long ts = SystemClock.elapsedRealtime();
+        Request request = this.repository.getById(requestId);
+        request.updateState(state, ts);
+        this.repository.store(request);
+        long rtc = System.currentTimeMillis();
+        this.eventBus.post(new RequestStateChangedEvent(requestId, rtc, state));
+        if (state) {
+            return;
+        }
+        this.addToQueue(request);
     }
 
     private boolean isBackoffLimitReached(int retires) {

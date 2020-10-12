@@ -23,7 +23,7 @@ public class App extends Application {
                 .application(this)
                 .build();
         this.applicationComponent.inject(this);
-
+        this.requestService.init();
         this.requestService.start();
     }
 }
