@@ -13,6 +13,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+// TODO: error handling
 public class RequestService {
 
     private final static String TAG = RequestService.class.getSimpleName();
