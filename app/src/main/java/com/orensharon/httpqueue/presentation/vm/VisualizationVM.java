@@ -18,6 +18,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
+// TODO: get list of all existing request - using rx?
 public class VisualizationVM extends ViewModel implements IVisualizationVM {
 
     private final static String TAG = VisualizationVM.class.getSimpleName();

@@ -23,6 +23,7 @@ public class RequestRepository {
     }
 
     public void init() {
+        // Map all existing entities to domain model
         List<RequestEntity> entities = this.local.listAllFails();
         for (RequestEntity entity : entities) {
             this.requests.put(entity.getId(), new EntityToRequestMapper().map(entity));
@@ -38,6 +39,7 @@ public class RequestRepository {
     }
 
     public List<Request> list() {
+        // TODO: should be sorted?
         List<Request> result = new ArrayList<>();
         for (Request request : this.requests.values()) {
             result.add(new Request(request));
@@ -46,6 +48,7 @@ public class RequestRepository {
     }
 
     public void store(Request request) {
+        // Insert if not exists, update if exists
         long id = this.local.upsert(new RequestToEntityMapper().map(request));
         if (id > 0) {
             // New id generated to request - update domain entity
