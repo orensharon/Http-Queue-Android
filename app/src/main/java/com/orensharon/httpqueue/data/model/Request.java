@@ -1,6 +1,5 @@
 package com.orensharon.httpqueue.data.model;
 
-// TODO: duplicates 5-6
 public class Request {
 
     public interface Method {
@@ -57,11 +56,11 @@ public class Request {
         this.id = id;
     }
 
-    public void updateState(boolean state, long ts) {
+    public void updateState(boolean success, long ts) {
         if (this.lastRetryMs > ts) {
             throw new RuntimeException("INVALID_TIMESTAMP");
         }
-        if (!state) {
+        if (!success) {
             this.failed(ts);
             return;
         }

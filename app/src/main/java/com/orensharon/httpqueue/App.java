@@ -28,7 +28,6 @@ public class App extends Application implements HasAndroidInjector {
                 .build()
                 .inject(this);
         this.requestService.init();
-        this.requestService.start();
     }
 
     @Override

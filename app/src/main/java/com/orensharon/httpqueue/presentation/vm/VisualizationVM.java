@@ -128,9 +128,9 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRequestStateChangedEvent(RequestStateChangedEvent event) {
         Log.i(TAG, "onRequestStateChangedEvent " + event.toString());
-        RequestEvent requestEvent = this.visualization.add(event.requestId, event.state, event.ts);
+        RequestEvent requestEvent = this.visualization.add(event.requestId, event.success, event.ts);
         int percentage = this.visualization.getSuccessPercentage();
-        if (event.state) {
+        if (event.success) {
             this.successEvent.setValue(requestEvent);
         } else {
             this.failedEvent.setValue(requestEvent);

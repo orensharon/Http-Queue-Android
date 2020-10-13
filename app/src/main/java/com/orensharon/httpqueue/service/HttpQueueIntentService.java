@@ -62,8 +62,12 @@ public class HttpQueueIntentService extends IntentService implements HTTPMethods
 
     @Override
     public void put(Context context, String endpoint, String jsonPayload) {
-        Request request = Request.put(endpoint, jsonPayload);
-        Log.i(TAG, "put: " + request.toString());
-        this.requestService.add(request);
+        try {
+            Request request = Request.put(endpoint, jsonPayload);
+            Log.i(TAG, "put: " + request.toString());
+            this.requestService.add(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

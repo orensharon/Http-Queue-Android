@@ -2,20 +2,20 @@ package com.orensharon.httpqueue.presentation.model;
 
 public class RequestEvent {
     public final long requestId;
-    public final boolean state;
+    public final boolean success;
     public final long ts;
     public final long number;
 
-    public RequestEvent(long requestId, boolean state, long ts, long number) {
+    public RequestEvent(long requestId, boolean success, long ts, long number) {
         this.requestId = requestId;
-        this.state = state;
+        this.success = success;
         this.ts = ts;
         this.number = number;
     }
 
     public RequestEvent(RequestEvent requestEvent) {
         this.requestId = requestEvent.requestId;
-        this.state = requestEvent.state;
+        this.success = requestEvent.success;
         this.ts = requestEvent.ts;
         this.number = requestEvent.number;
     }
@@ -24,7 +24,7 @@ public class RequestEvent {
     public String toString() {
         return "RequestEvent{" +
                 "requestId=" + requestId +
-                ", state=" + state +
+                ", state=" + success +
                 ", ts=" + ts +
                 ", number=" + number +
                 '}';

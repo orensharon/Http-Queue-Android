@@ -20,7 +20,7 @@ public class RequestDispatcher {
     }
 
     public interface Callback {
-        void onHandled(boolean state);
+        void onHandled(boolean success);
     }
 
     public void dispatch(int method, String url, String payload, Callback callback) {

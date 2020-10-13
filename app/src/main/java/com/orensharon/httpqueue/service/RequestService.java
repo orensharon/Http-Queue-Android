@@ -10,7 +10,6 @@ import com.orensharon.httpqueue.data.event.RequestStateChangedEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.List;
 import java.util.concurrent.Executor;
 
 // TODO: error handling
@@ -33,12 +32,15 @@ public class RequestService {
     }
 
     public void init() {
-        this.executor.execute(this.repository::init);
+        this.executor.execute(() -> {
+            this.repository.init();
+            this.start();
+        });
     }
 
-    public void start() {
+    private void start() {
         this.queueWorker.listen();
-        this.executor.execute(this::loadPastRequests);
+        this.loadPastRequests();
     }
 
     public void add(Request request) {
@@ -49,15 +51,8 @@ public class RequestService {
     }
 
     private void loadPastRequests() {
-        List<Request> requests = this.repository.list();
-        for (Request request : requests) {
-            try {
-                this.addToQueue(request);
-            } catch (Exception e) {
-                // Failed to add request into queue worker
-                // TODO: What should I do about it?
-                e.printStackTrace();
-            }
+        for (Request request : this.repository.list()) {
+            this.addToQueue(request);
         }
     }
 
@@ -72,7 +67,13 @@ public class RequestService {
             return;
         }
         Runnable dequeueListener = () -> this.onRequestReady(request.getId());
-        this.queueWorker.enqueue(request.getId(), request.getScheduledTime(), dequeueListener);
+        try {
+            this.queueWorker.enqueue(request.getId(), request.getScheduledTime(), dequeueListener);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Failed to add request into queue worker
+            // TODO: What should I do about it?
+        }
     }
 
     // Callback fired after request dequeue
@@ -100,22 +101,21 @@ public class RequestService {
     }
 
     //Callback fired after receiving response
-    private void onDispatcherResponse(long requestId, boolean state) {
-        this.executor.execute(() -> this.handleRequestResult(requestId, state));
+    private void onDispatcherResponse(long requestId, boolean success) {
+        this.executor.execute(() -> this.handleRequestResult(requestId, success));
     }
 
-    private void handleRequestResult(long requestId, boolean state) {
-        Log.i(TAG, "onDispatcherResponse - requestId:" + requestId + " state: " + state);
+    private void handleRequestResult(long requestId, boolean success) {
+        Log.i(TAG, "onDispatcherResponse - requestId:" + requestId + " state: " + success);
         long ts = SystemClock.elapsedRealtime();
         Request request = this.repository.getById(requestId);
-        request.updateState(state, ts);
+        request.updateState(success, ts);
         this.repository.store(request);
         long rtc = System.currentTimeMillis();
-        this.eventBus.post(new RequestStateChangedEvent(requestId, rtc, state));
-        if (state) {
-            return;
+        this.eventBus.post(new RequestStateChangedEvent(requestId, rtc, success));
+        if (!success) {
+            this.addToQueue(request);
         }
-        this.addToQueue(request);
     }
 
     private boolean isBackoffLimitReached(int retires) {

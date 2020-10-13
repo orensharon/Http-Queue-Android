@@ -16,10 +16,10 @@ public class Visualization {
         this.graphTime = new GraphTime(timeScale);
     }
 
-    public RequestEvent add(long requestId, boolean state, long ts) {
-        List<RequestEvent> list = state? this.successEvents: this.failedEvents;
+    public RequestEvent add(long requestId, boolean success, long ts) {
+        List<RequestEvent> list = success? this.successEvents: this.failedEvents;
         long eventNumber = list.size() + 1;
-        RequestEvent event = new RequestEvent(requestId, state, ts, eventNumber);
+        RequestEvent event = new RequestEvent(requestId, success, ts, eventNumber);
         list.add(event);
         return event;
     }

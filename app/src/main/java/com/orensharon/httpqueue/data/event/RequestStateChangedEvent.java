@@ -5,12 +5,12 @@ import java.util.Date;
 public class RequestStateChangedEvent {
     public final long requestId;
     public final long ts;
-    public final boolean state;
+    public final boolean success;
 
-    public RequestStateChangedEvent(long requestId, long ts, boolean state) {
+    public RequestStateChangedEvent(long requestId, long ts, boolean success) {
         this.requestId = requestId;
         this.ts = ts;
-        this.state = state;
+        this.success = success;
     }
 
     @Override
@@ -18,7 +18,7 @@ public class RequestStateChangedEvent {
         return "RequestStateChangedEvent{" +
                 "requestId=" + requestId +
                 ", ts=" + new Date(this.ts).toString() +
-                ", state=" + state +
+                ", success=" + success +
                 '}';
     }
 }
