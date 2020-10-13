@@ -73,6 +73,7 @@ public class Request {
     }
 
     public boolean isSuccess() {
+        // TODO: instead - add field success ts
         return this.retries == -1;
     }
 
@@ -119,7 +120,7 @@ public class Request {
         if (this.retries == 0) {
             return 0;
         }
-        return (long) Math.pow(2, this.retries) * 1000;
+        return (long) Math.pow(2, this.retries - 1) * 1000;
     }
 
     @Override

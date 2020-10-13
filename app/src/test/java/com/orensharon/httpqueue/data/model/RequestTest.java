@@ -39,6 +39,16 @@ public class RequestTest {
     }
 
     @Test
+    public void testCreatePut() {
+        String endPoint = "v";
+        String payload = "payload";
+        Request request = Request.put(endPoint,payload);
+        Assert.assertEquals(Request.Method.PUT, request.getMethod());
+        Assert.assertEquals(endPoint, request.getEndpoint());
+        Assert.assertEquals(payload, request.getPayload());
+    }
+
+    @Test
     public void testSetId() {
         long id = 10;
         Request request = createValidGenericPutRequest();
@@ -119,12 +129,12 @@ public class RequestTest {
 
     @Test
     public void testUpdateState_failed() {
-        long ts = 10;
+        long ts = 0;
         Request request = createValidGenericPutRequest();
         request.setId(1);
 
         for (int retry = 1; retry < Constants.MAX_BACKOFF_LIMIT; retry++) {
-            long exponent = (long) Math.pow(2, retry) * 1000;
+            long exponent = (long) Math.pow(2, retry - 1) * 1000;
             request.updateState(false, ts);
             Assert.assertEquals(ts, request.getLastRetryMs());
             Assert.assertEquals(retry, request.getReties());
