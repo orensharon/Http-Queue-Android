@@ -128,12 +128,12 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
     public void onRequestStateChangedEvent(RequestStateChangedEvent event) {
         Log.i(TAG, "onRequestStateChangedEvent " + event.toString());
         RequestEvent requestEvent = this.visualization.add(event.requestId, event.state, event.ts);
+        int percentage = this.visualization.getSuccessPercentage();
         if (event.state) {
             this.successEvent.setValue(requestEvent);
         } else {
             this.failedEvent.setValue(requestEvent);
         }
-        int percentage = this.visualization.getSuccessPercentage();
         this.successPercentage.setValue(percentage);
     }
 }
