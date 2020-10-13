@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+// TODO: keep list/map here or delegate from db when querying
 public class RequestRepository {
 
     private final Map<Long, Request> requests;
