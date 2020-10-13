@@ -7,10 +7,11 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.orensharon.httpqueue.App;
 import com.orensharon.httpqueue.data.model.Request;
 
 import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 
 public class HttpQueueIntentService extends IntentService implements HTTPMethods {
 
@@ -30,9 +31,9 @@ public class HttpQueueIntentService extends IntentService implements HTTPMethods
 
     @Override
     public void onCreate() {
+        AndroidInjection.inject(this);
         Log.i(TAG, "onCreate");
         super.onCreate();
-        ((App)this.getApplicationContext()).applicationComponent.inject(this);
     }
 
     @Override

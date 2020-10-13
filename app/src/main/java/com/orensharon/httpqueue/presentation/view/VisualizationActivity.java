@@ -34,6 +34,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
+
 public class VisualizationActivity extends AppCompatActivity {
 
     private final static String TAG = VisualizationActivity.class.getSimpleName();
@@ -52,8 +54,8 @@ public class VisualizationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        ((App)this.getApplicationContext()).applicationComponent.inject(this);
 
         this.binding = DataBindingUtil.setContentView(this, R.layout.activity_visualization);
         this.viewModel = new ViewModelProvider(this, this.visualizationViewModelFactory).get(VisualizationVM.class);

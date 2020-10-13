@@ -1,17 +1,19 @@
 package com.orensharon.httpqueue.di;
 
 import com.orensharon.httpqueue.App;
-import com.orensharon.httpqueue.presentation.view.VisualizationActivity;
-import com.orensharon.httpqueue.service.HttpQueueIntentService;
 
 import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
+import dagger.android.support.AndroidSupportInjectionModule;
 
 @Singleton
 @Component(modules = {
-        ApplicationModule.class
+        ApplicationModule.class,
+        AndroidSupportInjectionModule.class,
+        ViewBuildersModule.class,
+        AndroidServiceBuildersModule.class
 })
 public interface ApplicationComponent {
 
@@ -22,6 +24,4 @@ public interface ApplicationComponent {
         ApplicationComponent build();
     }
     void inject(App app);
-    void inject(VisualizationActivity visualizationActivity);
-    void inject(HttpQueueIntentService service);
 }

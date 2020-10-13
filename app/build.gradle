@@ -62,10 +62,10 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation "android.arch.persistence.room:runtime:$lifecycle_version"
     annotationProcessor "android.arch.persistence.room:compiler:$lifecycle_version"
-    implementation "com.google.dagger:dagger:2.21"
-    annotationProcessor "com.google.dagger:dagger-compiler:2.21"
-    annotationProcessor "com.google.dagger:dagger-android-processor:2.21"
-    implementation "com.google.dagger:dagger-android-support:2.21"
+    implementation "com.google.dagger:dagger:2.23"
+    annotationProcessor "com.google.dagger:dagger-compiler:2.23"
+    annotationProcessor "com.google.dagger:dagger-android-processor:2.23"
+    implementation "com.google.dagger:dagger-android-support:2.23"
     compileOnly 'javax.annotation:jsr250-api:1.0'
     implementation 'javax.inject:javax.inject:1'
 
