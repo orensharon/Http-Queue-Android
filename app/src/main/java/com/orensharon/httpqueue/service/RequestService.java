@@ -75,7 +75,7 @@ public class RequestService {
         } catch (Exception e) {
             e.printStackTrace();
             // Failed to add request into queue worker
-            // TODO: What should I do about it?
+            // TODO: re-enqueue?
         }
     }
 
@@ -96,7 +96,7 @@ public class RequestService {
             this.dispatcher.dispatch(method, url, payload, dispatchedCallback);
         } catch (Exception e) {
             // Failed to send request - add it back to dispatch queue
-            // TODO: should I use retries form this kind of fails?
+            // TODO: Use retries to this kind of fails?
             this.addToQueue(request);
             e.printStackTrace();
         }

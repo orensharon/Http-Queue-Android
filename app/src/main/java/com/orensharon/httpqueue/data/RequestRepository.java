@@ -11,9 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-// TODO: keep list/map here or delegate from db when querying
 public class RequestRepository {
 
+    // Save cache of all request to reduce dao operations
+    // in case of many requests
     private final Map<Long, Request> requests;
     private final RequestDAO local;
 
@@ -39,7 +40,7 @@ public class RequestRepository {
     }
 
     public List<Request> list() {
-        // TODO: should be sorted?
+        // TODO: as sorted list
         List<Request> result = new ArrayList<>();
         for (Request request : this.requests.values()) {
             result.add(new Request(request));

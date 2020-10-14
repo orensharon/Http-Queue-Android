@@ -72,7 +72,7 @@ public class Request {
     }
 
     public boolean isSuccess() {
-        // TODO: instead - add field success ts
+        // TODO: instead - add field 'success-ts'
         return this.retries == -1;
     }
 

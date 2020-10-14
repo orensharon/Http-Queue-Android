@@ -18,7 +18,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
-// TODO: get list of all existing request - using rx?
+// TODO: on-load - get list of all existing request - using RxJava?
 public class VisualizationVM extends ViewModel implements IVisualizationVM {
 
     private final static String TAG = VisualizationVM.class.getSimpleName();
@@ -43,7 +43,6 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
         this.invalidClick = new SingleLiveEvent<>();
         this.successEvent = new SingleLiveEvent<>();
         this.failedEvent = new SingleLiveEvent<>();
-        // TODO: here?
         this.timeScale.setValue(this.visualization.getTimeScale());
         this.successPercentage.setValue(this.visualization.getSuccessPercentage());
     }
@@ -129,12 +128,11 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
     public void onRequestStateChangedEvent(RequestStateChangedEvent event) {
         Log.d(TAG, "onRequestStateChangedEvent " + event.toString());
         RequestEvent requestEvent = this.visualization.add(event.requestId, event.success, event.ts);
-        int percentage = this.visualization.getSuccessPercentage();
+        this.successPercentage.setValue(this.visualization.getSuccessPercentage());
         if (event.success) {
             this.successEvent.setValue(requestEvent);
-        } else {
-            this.failedEvent.setValue(requestEvent);
+            return;
         }
-        this.successPercentage.setValue(percentage);
+        this.failedEvent.setValue(requestEvent);
     }
 }

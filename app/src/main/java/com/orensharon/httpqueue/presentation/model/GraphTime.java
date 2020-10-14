@@ -10,7 +10,6 @@ public class GraphTime {
     private int timeScale;
 
     public GraphTime(int timeScale) {
-        // TODO: calendar get instance heavy?
         this.start = Calendar.getInstance().getTimeInMillis();
         this.timeScale = timeScale;
         this.end = this.computeEnd(timeScale);
