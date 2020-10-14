@@ -24,7 +24,7 @@ public class RequestDispatcher {
     }
 
     public void dispatch(int method, String url, String payload, Callback callback) {
-        Log.i(TAG, "Dispatch url: " + url);
+        Log.d(TAG, "Dispatch url: " + url);
         int transformMethod = this.transformMethod(method);
         try {
             JsonObjectRequest req = new JsonObjectRequest(

@@ -58,7 +58,7 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
     @Override
     protected void onCleared() {
         super.onCleared();
-        Log.i(TAG, "onCleared");
+        Log.d(TAG, "onCleared");
         this.eventBus.unregister(this);
     }
 
@@ -127,7 +127,7 @@ public class VisualizationVM extends ViewModel implements IVisualizationVM {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRequestStateChangedEvent(RequestStateChangedEvent event) {
-        Log.i(TAG, "onRequestStateChangedEvent " + event.toString());
+        Log.d(TAG, "onRequestStateChangedEvent " + event.toString());
         RequestEvent requestEvent = this.visualization.add(event.requestId, event.success, event.ts);
         int percentage = this.visualization.getSuccessPercentage();
         if (event.success) {

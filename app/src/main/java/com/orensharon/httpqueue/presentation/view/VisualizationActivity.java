@@ -16,7 +16,6 @@ import com.jjoe64.graphview.LabelFormatter;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
-import com.orensharon.httpqueue.App;
 import com.orensharon.httpqueue.R;
 import com.orensharon.httpqueue.data.model.Request;
 import com.orensharon.httpqueue.databinding.ActivityVisualizationBinding;
@@ -66,15 +65,6 @@ public class VisualizationActivity extends AppCompatActivity {
         this.viewModel.init();
         this.initGraphComponents();
         //Mock.startSendMock(this.getApplicationContext());
-        /*Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                sendInvalid();
-                handler.postDelayed(this, 1000);
-            }
-        };
-        handler.postDelayed(runnable, 2000);*/
     }
 
     private void initObservers() {
@@ -94,7 +84,7 @@ public class VisualizationActivity extends AppCompatActivity {
     }
 
     private void appendNewEvent(LineGraphSeries<DataPoint> series, RequestEvent event) {
-        Log.i(TAG, "appendNewEvent:" + event.toString());
+        Log.d(TAG, "appendNewEvent:" + event.toString());
         series.appendData(new DataPoint(new Date(event.ts), event.number), false, 1000);
     }
 

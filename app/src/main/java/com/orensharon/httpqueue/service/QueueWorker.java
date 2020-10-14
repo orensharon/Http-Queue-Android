@@ -31,7 +31,7 @@ public class QueueWorker {
         if (this.isStarted()) {
             return;
         }
-        Log.i(TAG, "Starting");
+        Log.d(TAG, "Starting");
         this.started = true;
         this.executor = Executors.newSingleThreadExecutor();
         this.executor.execute(() -> {
@@ -44,7 +44,7 @@ public class QueueWorker {
                     break;
                 }
             }
-            Log.i(TAG, "No longer listing");
+            Log.d(TAG, "No longer listing");
             this.terminate();
         });
     }
@@ -66,7 +66,7 @@ public class QueueWorker {
         this.executor.shutdownNow();
         this.started = false;
         this.executor = null;
-        Log.i(TAG, "Terminated");
+        Log.d(TAG, "Terminated");
     }
 
     public boolean isStarted() {

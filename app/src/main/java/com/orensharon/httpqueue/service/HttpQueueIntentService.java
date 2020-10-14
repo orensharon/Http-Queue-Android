@@ -32,19 +32,19 @@ public class HttpQueueIntentService extends IntentService implements HTTPMethods
     @Override
     public void onCreate() {
         AndroidInjection.inject(this);
-        Log.i(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         super.onCreate();
     }
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "onDestroy");
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
     }
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Log.i(TAG, "onHandleIntent");
+        Log.d(TAG, "onHandleIntent");
         if (intent == null) {
             return;
         }
@@ -64,7 +64,7 @@ public class HttpQueueIntentService extends IntentService implements HTTPMethods
     public void put(Context context, String endpoint, String jsonPayload) {
         try {
             Request request = Request.put(endpoint, jsonPayload);
-            Log.i(TAG, "put: " + request.toString());
+            Log.d(TAG, "put: " + request.toString());
             this.requestService.add(request);
         } catch (Exception e) {
             e.printStackTrace();

@@ -12,7 +12,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.concurrent.Executor;
 
-// TODO: error handling
 public class RequestService {
 
     private final static String TAG = RequestService.class.getSimpleName();
@@ -38,11 +37,13 @@ public class RequestService {
         });
     }
 
+    // Load old requests and start listening to new requests
     private void start() {
         this.queueWorker.listen();
         this.loadPastRequests();
     }
 
+    // Add new request
     public void add(Request request) {
         this.executor.execute(() -> {
             this.repository.store(request);
@@ -50,12 +51,14 @@ public class RequestService {
         });
     }
 
+    // Init all requests from repository into the queue
     private void loadPastRequests() {
         for (Request request : this.repository.list()) {
             this.addToQueue(request);
         }
     }
 
+    // Add request to worker queue
     private void addToQueue(Request request) {
         if (request.isSuccess()) {
             // Already sent successfully
@@ -63,7 +66,7 @@ public class RequestService {
         }
         boolean backoffLimitReached = this.isBackoffLimitReached(request.getReties());
         if (backoffLimitReached) {
-            Log.i(TAG, "addToQueue - Backoff limit reached: " + request.toString());
+            Log.d(TAG, "addToQueue - Backoff limit reached: " + request.toString());
             return;
         }
         Runnable dequeueListener = () -> this.onRequestReady(request.getId());
@@ -83,7 +86,7 @@ public class RequestService {
 
     // Send request
     private void dispatchRequest(long requestId) {
-        Log.i(TAG, "onRequestReady requestId=" + requestId);
+        Log.d(TAG, "onRequestReady requestId=" + requestId);
         Request request = this.repository.getById(requestId);
         int method = request.getMethod();
         String url = request.getEndpoint();
@@ -97,7 +100,6 @@ public class RequestService {
             this.addToQueue(request);
             e.printStackTrace();
         }
-
     }
 
     //Callback fired after receiving response
@@ -105,8 +107,9 @@ public class RequestService {
         this.executor.execute(() -> this.handleRequestResult(requestId, success));
     }
 
+    // Handle request result
     private void handleRequestResult(long requestId, boolean success) {
-        Log.i(TAG, "onDispatcherResponse - requestId:" + requestId + " state: " + success);
+        Log.d(TAG, "onDispatcherResponse - requestId:" + requestId + " state: " + success);
         long ts = SystemClock.elapsedRealtime();
         Request request = this.repository.getById(requestId);
         request.updateState(success, ts);
@@ -114,8 +117,10 @@ public class RequestService {
         long rtc = System.currentTimeMillis();
         this.eventBus.post(new RequestStateChangedEvent(requestId, rtc, success));
         if (!success) {
+            // TODO: if 18th retry failed => delete request from db?
             this.addToQueue(request);
         }
+        // TODO: delete success requests from repo?
     }
 
     private boolean isBackoffLimitReached(int retires) {

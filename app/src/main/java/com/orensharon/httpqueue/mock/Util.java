@@ -12,7 +12,7 @@ public class Util {
 
 
     public static String getInvalidURL() {
-        return String.format("%s/%s", BuildConfig.API_URL, "posts/122");
+        return String.format("%sc/%s", BuildConfig.API_URL, "posts/122");
     }
 
     public static String getValidURL() {
