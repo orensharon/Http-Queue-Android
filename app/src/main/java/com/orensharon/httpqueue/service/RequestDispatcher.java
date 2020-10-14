@@ -23,21 +23,18 @@ public class RequestDispatcher {
         void onHandled(boolean success);
     }
 
-    public void dispatch(int method, String url, String payload, Callback callback) {
+    public void dispatch(int method, String url, String payload, Callback callback) throws JSONException {
         Log.d(TAG, "Dispatch url: " + url);
         int transformMethod = this.transformMethod(method);
-        try {
-            JsonObjectRequest req = new JsonObjectRequest(
-                    transformMethod,
-                    url,
-                    new JSONObject(payload),
-                    response -> callback.onHandled(true),
-                    error -> callback.onHandled(false));
-            this.requestQueue.add(req);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callback.onHandled(false);
-        }
+        JSONObject body = new JSONObject(payload);
+        JsonObjectRequest req = new JsonObjectRequest(
+                transformMethod,
+                url,
+                body,
+                response -> callback.onHandled(true),
+                error -> callback.onHandled(false)
+        );
+        this.requestQueue.add(req);
     }
 
     private int transformMethod(int method) {
@@ -45,7 +42,7 @@ public class RequestDispatcher {
             case com.orensharon.httpqueue.data.model.Request.Method.PUT:
                 return Request.Method.PUT;
             default:
-                return -2;
+                throw new RuntimeException("INVALID_METHOD");
         }
     }
 }

@@ -19,6 +19,7 @@ public class QueueWorker {
     private final PriorityBlockingQueue<QueuedRequest> requests;
 
     public QueueWorker() {
+        // TODO: size
         this.requests = new PriorityBlockingQueue<>(10, new QueueComparator());
     }
 
@@ -34,7 +35,7 @@ public class QueueWorker {
         Log.d(TAG, "Starting");
         this.started = true;
         this.executor = Executors.newSingleThreadExecutor();
-        this.executor.execute(() -> {
+        Runnable runnable = () -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     this.mainJob();
@@ -45,8 +46,10 @@ public class QueueWorker {
                 }
             }
             Log.d(TAG, "No longer listing");
+            // TODO: restart executor if state is started
             this.terminate();
-        });
+        };
+        this.executor.execute(runnable);
     }
 
     private void mainJob() throws InterruptedException {

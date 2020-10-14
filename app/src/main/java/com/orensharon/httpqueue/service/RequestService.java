@@ -9,6 +9,7 @@ import com.orensharon.httpqueue.data.RequestRepository;
 import com.orensharon.httpqueue.data.event.RequestStateChangedEvent;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
 
 import java.util.concurrent.Executor;
 
@@ -94,11 +95,10 @@ public class RequestService {
         RequestDispatcher.Callback dispatchedCallback = (state) -> this.onDispatcherResponse(requestId, state);
         try {
             this.dispatcher.dispatch(method, url, payload, dispatchedCallback);
+        } catch (JSONException e) {
+            // TODO: invalid payload -> remove from repository
         } catch (Exception e) {
-            // Failed to send request - add it back to dispatch queue
-            // TODO: Use retries to this kind of fails?
-            this.addToQueue(request);
-            e.printStackTrace();
+            // TODO: invalid method? -> remove from repository
         }
     }
 
