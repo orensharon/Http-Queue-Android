@@ -24,7 +24,7 @@ android {
         }
         debug {
             debuggable true
-            buildConfigField "int", "BACKOFF_LIMIT", "18"
+            buildConfigField "int", "BACKOFF_LIMIT", "19"
             buildConfigField "String", "API_URL", "\"https://jsonplaceholder.typicode.com\""
         }
         staging {
