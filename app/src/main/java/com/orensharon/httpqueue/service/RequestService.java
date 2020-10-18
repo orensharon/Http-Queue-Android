@@ -117,10 +117,15 @@ public class RequestService {
         long rtc = System.currentTimeMillis();
         this.eventBus.post(new RequestStateChangedEvent(requestId, rtc, success));
         if (!success) {
-            // TODO: if 18th retry failed => delete request from db?
-            this.addToQueue(request);
+            if (!this.isBackoffLimitReached(request.getReties())) {
+                this.addToQueue(request);
+                return;
+            }
+            // back-off limit reached
+            // TODO: delete request from repo?
         }
-        // TODO: delete success requests from repo?
+        // Success
+        // TODO: delete request from repo?
     }
 
     private boolean isBackoffLimitReached(int retires) {
