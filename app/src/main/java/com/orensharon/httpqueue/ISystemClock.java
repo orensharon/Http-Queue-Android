@@ -1,4 +1,5 @@
 package com.orensharon.httpqueue;
 
-public class ISystemClock {
+public interface ISystemClock {
+    long getElapsedRealTime();
 }

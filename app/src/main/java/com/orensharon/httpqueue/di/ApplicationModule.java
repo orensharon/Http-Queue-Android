@@ -8,10 +8,11 @@ import androidx.room.Room;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.orensharon.httpqueue.App;
+import com.orensharon.httpqueue.ISystemClock;
+import com.orensharon.httpqueue.SystemClockWrapper;
 import com.orensharon.httpqueue.data.RequestRepository;
 import com.orensharon.httpqueue.data.room.RequestDAO;
 import com.orensharon.httpqueue.data.room.RequestDatabase;
-import com.orensharon.httpqueue.presentation.vm.VisualizationViewModelFactory;
 import com.orensharon.httpqueue.service.QueueWorker;
 import com.orensharon.httpqueue.service.RequestDispatcher;
 import com.orensharon.httpqueue.service.RequestService;
@@ -19,6 +20,7 @@ import com.orensharon.httpqueue.service.RequestService;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
@@ -39,6 +41,11 @@ public class ApplicationModule {
         return Executors.newSingleThreadExecutor();
     }
 
+    @Provides
+    ExecutorService provideExecutorService() {
+        return Executors.newSingleThreadExecutor();
+    }
+
     @Singleton
     @Provides
     RequestRepository provideRequestRepository(RequestDAO dao) {
@@ -47,8 +54,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    RequestService provideRequestService(RequestRepository repository, RequestDispatcher dispatcher, QueueWorker queueWorker, EventBus eventBus, Executor executor) {
-        return new RequestService(repository, queueWorker, dispatcher, eventBus, executor);
+    RequestService provideRequestService(RequestRepository repository, RequestDispatcher dispatcher, QueueWorker queueWorker, EventBus eventBus, Executor executor, ISystemClock systemClock) {
+        return new RequestService(repository, queueWorker, dispatcher, eventBus, executor, systemClock);
     }
 
     @Singleton
@@ -65,8 +72,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    QueueWorker provideQueueWorker() {
-        return new QueueWorker();
+    QueueWorker provideQueueWorker(ExecutorService executorService, ISystemClock systemClock) {
+        return new QueueWorker(executorService, systemClock);
     }
 
     @Singleton
@@ -88,5 +95,11 @@ public class ApplicationModule {
     @Provides
     RequestDAO provideRequestDAO(RequestDatabase database) {
         return database.getRequestDAO();
+    }
+
+    @Singleton
+    @Provides
+    ISystemClock provideSystemClock() {
+        return new SystemClockWrapper();
     }
 }

@@ -1,4 +1,10 @@
 package com.orensharon.httpqueue;
 
-public class SystemClockWrapper {
+import android.os.SystemClock;
+
+public class SystemClockWrapper implements ISystemClock {
+    @Override
+    public long getElapsedRealTime() {
+        return SystemClock.elapsedRealtime();
+    }
 }

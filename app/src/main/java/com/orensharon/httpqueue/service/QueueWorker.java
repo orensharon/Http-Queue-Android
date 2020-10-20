@@ -3,10 +3,13 @@ package com.orensharon.httpqueue.service;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.orensharon.httpqueue.ISystemClock;
+
 import java.util.Comparator;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
+
+import javax.inject.Inject;
 
 public class QueueWorker {
 
@@ -16,25 +19,38 @@ public class QueueWorker {
     private volatile boolean started;
 
     private ExecutorService executor;
+    private final ISystemClock systemClock;
     private final PriorityBlockingQueue<QueuedRequest> requests;
 
-    public QueueWorker() {
+    public interface Listener {
+        void run(long requestId);
+    }
+
+    @Inject
+    public QueueWorker(ExecutorService executor, ISystemClock systemClock) {
         // TODO: size
+        this.executor = executor;
+        this.systemClock = systemClock;
         this.requests = new PriorityBlockingQueue<>(10, new QueueComparator());
     }
 
 
-    public void enqueue(long requestId, long scheduledTs, Runnable runnable) {
-        this.requests.add(new QueuedRequest(requestId, scheduledTs, runnable));
+    public void enqueue(long requestId, long scheduledTs, Listener listener) {
+        if (listener == null) {
+            throw new NullPointerException("DEQUEUE_LISTENER_NULL");
+        }
+        if (!this.isStarted()) {
+            throw new RuntimeException("WORKER_NOT_STARTED");
+        }
+        this.requests.add(new QueuedRequest(requestId, scheduledTs, listener));
     }
 
     public void listen() {
         if (this.isStarted()) {
-            return;
+            throw new RuntimeException("ALREADY_LISTENING");
         }
         Log.d(TAG, "Starting");
         this.started = true;
-        this.executor = Executors.newSingleThreadExecutor();
         Runnable runnable = () -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
@@ -54,12 +70,12 @@ public class QueueWorker {
 
     private void mainJob() throws InterruptedException {
         QueuedRequest request = this.requests.take();
-        long ts = SystemClock.elapsedRealtime();
+        long ts = this.systemClock.getElapsedRealTime();
         if (!request.isReady(ts)) {
             this.requests.add(request);
             return;
         }
-        request.runnable.run();
+        request.listener.run(request.requestId);
     }
 
     public void terminate() {
@@ -78,14 +94,14 @@ public class QueueWorker {
 
 
     static class QueuedRequest {
-        long ts;
-        long requestId;
-        Runnable runnable;
+        final long ts;
+        final long requestId;
+        final Listener listener;
 
-        public QueuedRequest(long requestId, long scheduledTs, Runnable runnable) {
+        public QueuedRequest(long requestId, long scheduledTs, Listener listener) {
             this.ts = scheduledTs;
             this.requestId = requestId;
-            this.runnable = runnable;
+            this.listener = listener;
         }
 
         public boolean isReady(long ts) {
@@ -93,7 +109,7 @@ public class QueueWorker {
         }
     }
 
-    public static class QueueComparator implements Comparator<QueuedRequest> {
+    private static class QueueComparator implements Comparator<QueuedRequest> {
         @Override
         public int compare(QueuedRequest x, QueuedRequest y) {
             return Long.compare(x.ts, y.ts);

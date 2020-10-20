@@ -1,9 +1,9 @@
 package com.orensharon.httpqueue.service;
 
-import android.os.SystemClock;
 import android.util.Log;
 
 import com.orensharon.httpqueue.Constants;
+import com.orensharon.httpqueue.ISystemClock;
 import com.orensharon.httpqueue.data.model.Request;
 import com.orensharon.httpqueue.data.RequestRepository;
 import com.orensharon.httpqueue.data.event.RequestStateChangedEvent;
@@ -22,13 +22,15 @@ public class RequestService {
     private final RequestDispatcher dispatcher;
     private final EventBus eventBus;
     private final Executor executor;
+    private final ISystemClock systemClock;
 
-    public RequestService(RequestRepository repository, QueueWorker queueWorker, RequestDispatcher dispatcher, EventBus eventBus, Executor executor) {
+    public RequestService(RequestRepository repository, QueueWorker queueWorker, RequestDispatcher dispatcher, EventBus eventBus, Executor executor, ISystemClock systemClock) {
         this.repository = repository;
         this.queueWorker = queueWorker;
         this.dispatcher = dispatcher;
         this.eventBus = eventBus;
         this.executor = executor;
+        this.systemClock = systemClock;
     }
 
     public void init() {
@@ -70,9 +72,8 @@ public class RequestService {
             Log.d(TAG, "addToQueue - Backoff limit reached: " + request.toString());
             return;
         }
-        Runnable dequeueListener = () -> this.onRequestReady(request.getId());
         try {
-            this.queueWorker.enqueue(request.getId(), request.getScheduledTime(), dequeueListener);
+            this.queueWorker.enqueue(request.getId(), request.getScheduledTime(), this::onRequestReady);
         } catch (Exception e) {
             e.printStackTrace();
             // Failed to add request into queue worker
@@ -89,12 +90,9 @@ public class RequestService {
     private void dispatchRequest(long requestId) {
         Log.d(TAG, "onRequestReady requestId=" + requestId);
         Request request = this.repository.getById(requestId);
-        int method = request.getMethod();
-        String url = request.getEndpoint();
-        String payload = request.getPayload();
         RequestDispatcher.Callback dispatchedCallback = (state) -> this.onDispatcherResponse(requestId, state);
         try {
-            this.dispatcher.dispatch(method, url, payload, dispatchedCallback);
+            this.dispatcher.dispatch(request.getMethod(), request.getEndpoint(), request.getPayload(), dispatchedCallback);
         } catch (JSONException e) {
             // TODO: invalid payload -> remove from repository
         } catch (Exception e) {
@@ -110,7 +108,7 @@ public class RequestService {
     // Handle request result
     private void handleRequestResult(long requestId, boolean success) {
         Log.d(TAG, "onDispatcherResponse - requestId:" + requestId + " state: " + success);
-        long ts = SystemClock.elapsedRealtime();
+        long ts = this.systemClock.getElapsedRealTime();
         Request request = this.repository.getById(requestId);
         request.updateState(success, ts);
         this.repository.store(request);

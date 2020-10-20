@@ -3,8 +3,10 @@ package com.orensharon.httpqueue.service;
 import com.orensharon.httpqueue.BuildConfig;
 import com.orensharon.httpqueue.DispatcherStub;
 import com.orensharon.httpqueue.ExecutorStub;
+import com.orensharon.httpqueue.ISystemClock;
 import com.orensharon.httpqueue.QueueWorkerStub;
 import com.orensharon.httpqueue.StubEventBus;
+import com.orensharon.httpqueue.SystemClockMock;
 import com.orensharon.httpqueue.data.RequestRepository;
 import com.orensharon.httpqueue.data.event.RequestStateChangedEvent;
 import com.orensharon.httpqueue.data.model.Request;
@@ -42,14 +44,17 @@ public class RequestServiceTest {
 
     private DispatcherStub dispatcherStub;
 
+    private ISystemClock clock;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         EventBus eventBus = new StubEventBus();
         Executor executor = new ExecutorStub();
-        QueueWorker queueWorker = new QueueWorkerStub();
+        this.clock = new SystemClockMock();
+        QueueWorker queueWorker = new QueueWorkerStub(new ExecutorServiceStub(), this.clock);
         this.dispatcherStub = new DispatcherStub();
-        this.requestService = new RequestService(this.requestRepository, queueWorker, this.dispatcherStub, this.eventBus, executor);
+        this.requestService = new RequestService(this.requestRepository, queueWorker, this.dispatcherStub, this.eventBus, executor, this.clock);
     }
 
     @Test

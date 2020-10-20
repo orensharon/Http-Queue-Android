@@ -46,6 +46,8 @@ public class Request {
         if (jsonPayload == null) {
             throw new NullPointerException("INVALID_PAYLOAD");
         }
+        // TODO: validated payload
+        // TODO: validate endpoint pattern
         return new Request(endpoint, jsonPayload, Method.PUT);
     }
 
