@@ -1,4 +1,4 @@
-package com.orensharon.httpqueue.service;
+package com.orensharon.httpqueue;
 
 import java.util.Collection;
 import java.util.List;

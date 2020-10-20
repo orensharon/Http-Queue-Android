@@ -2,6 +2,7 @@ package com.orensharon.httpqueue.service;
 
 import com.orensharon.httpqueue.BuildConfig;
 import com.orensharon.httpqueue.DispatcherStub;
+import com.orensharon.httpqueue.ExecutorServiceStub;
 import com.orensharon.httpqueue.ExecutorStub;
 import com.orensharon.httpqueue.ISystemClock;
 import com.orensharon.httpqueue.QueueWorkerStub;
