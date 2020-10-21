@@ -1,6 +1,5 @@
 package com.orensharon.httpqueue.service;
 
-import android.os.SystemClock;
 import android.util.Log;
 
 import com.orensharon.httpqueue.ISystemClock;
@@ -46,6 +45,10 @@ public class QueueWorker {
     }
 
     public void listen() {
+        this.listen(DELAY_BETWEEN_ENQUEUES);
+    }
+
+    public void listen(final long pollRate) {
         if (this.isStarted()) {
             throw new RuntimeException("ALREADY_LISTENING");
         }
@@ -55,7 +58,7 @@ public class QueueWorker {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     this.mainJob();
-                    Thread.sleep(DELAY_BETWEEN_ENQUEUES);
+                    Thread.sleep(pollRate);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     break;

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -151,5 +152,21 @@ public class QueueWorkerTest {
         long timeTook = this.clock.getElapsedRealTime() - ts;
         assertEquals(1, orders.get(0).longValue());
         assertThat(timeTook, Matchers.greaterThanOrEqualTo(delay));
+    }
+
+    @Test
+    public void testLoadPendingStatedRequestsOf3Days() throws InterruptedException {
+        long requests = TimeUnit.DAYS.toSeconds(3);
+        final CountDownLatch lastExecuted = new CountDownLatch((int) requests);
+        List<Long> dequeueRequests = new ArrayList<>();
+        this.queueWorker.listen(1);
+        for (long request = 0; request < requests; request++) {
+            this.queueWorker.enqueue(request, 0L,  reqId -> {
+                lastExecuted.countDown();
+                dequeueRequests.add(reqId);
+            });
+        }
+        lastExecuted.await();
+        assertEquals(requests, dequeueRequests.size());
     }
 }
